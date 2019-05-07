@@ -1,0 +1,22 @@
+﻿  stdafx.cpp
+  Camera.cpp
+  GameFramework.cpp
+  GameObject.cpp
+  LabProject.cpp
+  Mesh.cpp
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(223): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(416): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(439): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(681): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(901): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(902): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(918): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(1138): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(1139): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(1152): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\LabProject\Mesh.cpp(1366): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Player.cpp
+  Scene.cpp
+  Timer.cpp
+  코드를 생성하고 있습니다...
+  LabProject.vcxproj -> D:\4Grade1Semester\3DGameProgram\Direct12Rollercoaster\x64\Debug\LabProject.exe
