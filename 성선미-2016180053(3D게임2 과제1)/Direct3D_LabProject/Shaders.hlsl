@@ -1,3 +1,4 @@
+
 cbuffer cbPlayerInfo : register(b0)
 {
 	matrix		gmtxPlayerWorld : packoffset(c0);

@@ -1,3 +1,6 @@
+
+
+
 struct MATERIAL
 {
 	float4					m_cAmbient;

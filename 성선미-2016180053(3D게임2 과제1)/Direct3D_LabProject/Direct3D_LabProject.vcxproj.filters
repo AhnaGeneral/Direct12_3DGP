@@ -1,118 +1,136 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="resource">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="헤더 파일">
+    <Filter Include="header">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="1.gameframework">
+      <UniqueIdentifier>{c6efeac0-5220-41ce-8e53-e3aa0f36bf8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2.object">
+      <UniqueIdentifier>{545b060b-95da-4bcf-bdc9-0a9639e9a4e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3.camera">
+      <UniqueIdentifier>{821b3af4-4752-4c19-b909-53848ed18c0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="5.scene">
+      <UniqueIdentifier>{907d0201-bd89-4791-bb62-0dae00fdfe2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="6.player">
+      <UniqueIdentifier>{cac9699f-4880-41f9-ab4b-758b1317be93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="7.shader">
+      <UniqueIdentifier>{dac367f2-7eec-4341-afe3-a49c6f22e141}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="4.mesh">
+      <UniqueIdentifier>{2486f834-8f6c-4183-b154-dc60c35e2672}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Direct3D_LabProject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="DDSTextureLoader12.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="GameFramework.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="d3dx12.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>3.camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>4.mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>6.player</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>7.shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>2.object</Filter>
+    </ClInclude>
+    <ClInclude Include="GameFramework.h">
+      <Filter>1.gameframework</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader12.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>5.scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="Direct3D_LabProject.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="DDSTextureLoader12.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="GameFramework.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>3.camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>4.mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>6.player</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>7.shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>2.object</Filter>
+    </ClCompile>
+    <ClCompile Include="GameFramework.cpp">
+      <Filter>1.gameframework</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader12.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>5.scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Direct3D_LabProject.rc">
-      <Filter>리소스 파일</Filter>
+      <Filter>resource</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
-      <Filter>리소스 파일</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="Direct3D_LabProject.ico">
-      <Filter>리소스 파일</Filter>
+      <Filter>resource</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Light.hlsl" />
     <FxCompile Include="Shaders.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\HelicopterSample\Model\Gunship.txt">
-      <Filter>헤더 파일</Filter>
-    </Text>
+    <Text Include="sun.txt" />
   </ItemGroup>
 </Project>

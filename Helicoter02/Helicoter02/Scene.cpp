@@ -241,3 +241,5 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	for (int i = 0; i < m_nGameObjects; i++) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
 }
 
+
+

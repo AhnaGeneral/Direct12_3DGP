@@ -58,6 +58,7 @@ struct MATERIALSLOADINFO
 class CMaterialColors
 {
 public:
+	
 	CMaterialColors() { }
 	CMaterialColors(MATERIALLOADINFO *pMaterialInfo);
 	virtual ~CMaterialColors() { }
@@ -107,6 +108,9 @@ public:
 
 class CGameObject
 {
+public:
+	CGameObject();
+    virtual ~CGameObject();
 private:
 	int								m_nReferences = 0;
 
@@ -114,9 +118,6 @@ public:
 	void AddRef();
 	void Release();
 
-public:
-	CGameObject();
-    virtual ~CGameObject();
 
 public:
 	char							m_pstrFrameName[64];
