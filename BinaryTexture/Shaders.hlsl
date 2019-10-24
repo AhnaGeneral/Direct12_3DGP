@@ -20,13 +20,9 @@ cbuffer cbGameObjectInfo : register(b2)
 };
 
 #include "Light.hlsl"
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
+//[ Lighting, Texture Shader Code ]=====================================================
 Texture2D gtxtTexture : register(t0);
 SamplerState gSamplerState : register(s0);
-//#define _WITH_VERTEX_LIGHTING
 
 struct VS_LIGHTING_INPUT
 {
@@ -34,16 +30,12 @@ struct VS_LIGHTING_INPUT
 	float3 normal : NORMAL;
 	float2 uv : TEXCOORD;
 };
-
 struct VS_LIGHTING_OUTPUT
 {
 	float4 position : SV_POSITION;
 	float3 positionW : POSITION;
 	float3 normalW : NORMAL;
 	float2 uv : TEXCOORD;
-#ifdef _WITH_VERTEX_LIGHTING
-	float4 color : COLOR;
-#endif
 };
 
 VS_LIGHTING_OUTPUT VSLighting(VS_LIGHTING_INPUT input)
@@ -55,25 +47,58 @@ VS_LIGHTING_OUTPUT VSLighting(VS_LIGHTING_INPUT input)
 	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 	output.uv = input.uv; 
 
-#ifdef _WITH_VERTEX_LIGHTING
-	output.normalW = normalize(output.normalW);
-	output.color = Lighting(output.positionW, output.normalW);
-#endif
 	return(output);
 }
 
 float4 PSLighting(VS_LIGHTING_OUTPUT input) : SV_TARGET
 {
-#ifdef _WITH_VERTEX_LIGHTING
-	return(input.color);
-#else
-	
 	input.normalW = normalize(input.normalW);
 	float4 color = Lighting(input.positionW, input.normalW);
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	
 	cColor = lerp(color, cColor, 0.5f);
 	return(cColor);
-#endif
 }
+
+Texture2D gtxTerrainBaseTexture : register(t1); 
+Texture2D gtxTerrainDetailTexture: register(t2);  
+
+struct VS_TERRAIN_INPUT
+{
+	float3 position : POSITION;
+	float4 color : COLOR;
+	float2 uv0 : TEXCOORD0;
+	float2 uv1 : TEXCOORD1;
+};
+
+struct VS_TERRAIN_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float4 color : COLOR;
+	float2 uv0 : TEXCOORD0;
+	float2 uv1 : TEXCOORD1;
+};
+
+VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
+{
+	VS_TERRAIN_OUTPUT output;
+
+	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.color = input.color;
+	output.uv0 = input.uv0;
+	output.uv1 = input.uv1;
+
+	return(output);
+}
+
+float4 PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
+{
+	//float4 cBaseTexColor = gtxTerrainBaseTexture.Sample(gSamplerState, input.uv0);
+	//float4 cDetailTexColor = gtxTerrainDetailTexture.Sample(gSamplerState, input.uv1);
+	//float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
+
+	float4 cColor = float4(1,0,0,1);
+	return(cColor);
+}
+
 

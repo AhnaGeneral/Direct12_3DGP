@@ -146,10 +146,10 @@ public:
 	void AddRef() { m_nReferences++; }
 	void Release() { if (--m_nReferences <= 0) delete this; }
 
-	CShader							*m_pShader = NULL;
-
-	CMaterialColors					*m_pMaterialColors = NULL;
+	CShader* m_pShader = NULL;
 	CTexture* m_pTexture = NULL; 
+	CMaterialColors					*m_pMaterialColors = NULL;
+
 	void SetMaterialColors(CMaterialColors *pMaterialColors);
 	void SetShader(CShader *pShader);
 	void SetIlluminatedShader() { SetShader(m_pIlluminatedShader); }
@@ -173,7 +173,7 @@ public:
 	void Release();
 
 public:
-	CGameObject();
+	CGameObject(int nMeshes=1);
     virtual ~CGameObject();
 
 public:
@@ -186,6 +186,8 @@ public:
 
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
 
+	ID3D12Resource					*m_pd3dcbGameObject = NULL;
+
 	XMFLOAT4X4						m_xmf4x4Transform;
 	XMFLOAT4X4						m_xmf4x4World;
 
@@ -193,10 +195,15 @@ public:
 	CGameObject 					*m_pChild = NULL;
 	CGameObject 					*m_pSibling = NULL;
 
+	CMesh	**m_ppMeshes;
+	int m_nMeshes;
+
 	ID3D12Resource					*m_pd3dcbGameObjects = NULL;
 	CB_GAMEOBJECT_INFO				*m_pcbMappedGameObjects = NULL;
 
 	void SetMesh(CMesh *pMesh);
+	void SetMesh(int nIndex, CMesh *pMesh);
+
 	void SetShader(CShader *pShader);
 	void SetShader(int nMaterial, CShader *pShader);
 	void SetMaterial(int nMaterial, CMaterial *pMaterial);
@@ -307,17 +314,50 @@ public:
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
 };
 
-class CSuperCobraObject : public CGameObject
+//class CSuperCobraObject : public CGameObject
+//{
+//public:
+//	CSuperCobraObject();
+//	virtual ~CSuperCobraObject();
+//
+//private:
+//	CGameObject					*m_pMainRotorFrame = NULL;
+//	CGameObject					*m_pTailRotorFrame = NULL;
+//
+//public:
+//	virtual void OnInitialize();
+//	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
+//};
+
+
+class CHeightMapTerrain : public CGameObject
 {
 public:
-	CSuperCobraObject();
-	virtual ~CSuperCobraObject();
+	CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, LPCTSTR pFileName, int nWidth, int nLength, int nBlockWidth, int nBlockLength, XMFLOAT3 xmf3Scale, XMFLOAT4 xmf4Color);
+	virtual ~CHeightMapTerrain();
 
 private:
-	CGameObject					*m_pMainRotorFrame = NULL;
-	CGameObject					*m_pTailRotorFrame = NULL;
+	CHeightMapImage					*m_pHeightMapImage;
+
+	int								m_nWidth;
+	int								m_nLength;
+
+	//CMesh	**m_ppMeshes;
+	//int m_nMeshes;
+
+	XMFLOAT3						m_xmf3Scale;
 
 public:
-	virtual void OnInitialize();
-	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
+	float GetHeight(float x, float z, bool bReverseQuad = false) { return(m_pHeightMapImage->GetHeight(x, z, bReverseQuad) * m_xmf3Scale.y); } //World
+	XMFLOAT3 GetNormal(float x, float z) { return(m_pHeightMapImage->GetHeightMapNormal(int(x / m_xmf3Scale.x), int(z / m_xmf3Scale.z))); }
+
+	int GetHeightMapWidth() { return(m_pHeightMapImage->GetHeightMapWidth()); }
+	int GetHeightMapLength() { return(m_pHeightMapImage->GetHeightMapLength()); }
+
+	XMFLOAT3 GetScale() { return(m_xmf3Scale); }
+	float GetWidth() { return(m_nWidth * m_xmf3Scale.x); }
+	float GetLength() { return(m_nLength * m_xmf3Scale.z); }
+
+
 };
