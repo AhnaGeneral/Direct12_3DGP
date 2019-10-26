@@ -249,10 +249,9 @@ CAirplanePlayer::CAirplanePlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 	//pApacheModel->m_pChild->m_ppMaterials[0]->SetTexture(pTextures);
 
 	CGameObject *pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Mi28.bin");
-	pGameObject->m_pChild->m_ppMaterials[0]->SetTexture(pTextures);
-	
-
-
+	pGameObject->m_pChild->SetTexture(pTextures);
+	//CApacheObject* pApacheObject = NULL;
+	//pApacheObject->SetChild(pGameObject, true); 
 	pGameObject->Rotate(15.0f, 0.0f, 0.0f);
 	SetChild(pGameObject, true);
 	OnInitialize();
@@ -266,20 +265,20 @@ CAirplanePlayer::~CAirplanePlayer()
 
 void CAirplanePlayer::OnInitialize()
 {
-	m_pMainRotorFrame = FindFrame("rotor");
-	m_pTailRotorFrame = FindFrame("black_m_7");
+	m_pMainRotorFrame = FindFrame("roter");
+	m_pTailRotorFrame = FindFrame("roter2");
 }
 
 void CAirplanePlayer::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 {
 	if (m_pMainRotorFrame)
 	{
-		XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(360.0f * 2.0f) * fTimeElapsed);
+		XMMATRIX xmmtxRotate = XMMatrixRotationZ(XMConvertToRadians(360.0f ) * fTimeElapsed);
 		m_pMainRotorFrame->m_xmf4x4Transform = Matrix4x4::Multiply(xmmtxRotate, m_pMainRotorFrame->m_xmf4x4Transform);
 	}
 	if (m_pTailRotorFrame)
 	{
-		XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(360.0f * 4.0f) * fTimeElapsed);
+		XMMATRIX xmmtxRotate = XMMatrixRotationZ(XMConvertToRadians(360.0f ) * fTimeElapsed);
 		m_pTailRotorFrame->m_xmf4x4Transform = Matrix4x4::Multiply(xmmtxRotate, m_pTailRotorFrame->m_xmf4x4Transform);
 	}
 
@@ -328,7 +327,7 @@ CCamera *CAirplanePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 			SetMaxVelocityY(40.0f);
 			m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 			m_pCamera->SetTimeLag(0.25f);
-			m_pCamera->SetOffset(XMFLOAT3(0.0f, 65.0f, -140.0f));
+			m_pCamera->SetOffset(XMFLOAT3(0.0f, 100.0f, -180.0f));
 			m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 			m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 			m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);

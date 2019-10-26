@@ -5,13 +5,8 @@
 #include "stdafx.h"
 #include "Scene.h"
 
-CScene::CScene()
-{
-}
-
-CScene::~CScene()
-{
-}
+CScene::CScene() { }
+CScene::~CScene() { }
 
 void CScene::BuildDefaultLightsAndMaterials()
 {
@@ -68,12 +63,11 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	BuildDefaultLightsAndMaterials();
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.5f, 0.0f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 257, 257, xmf3Scale, xmf4Color);
-
+	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	m_nGameObjects = 4;
 	m_ppGameObjects = new CGameObject*[m_nGameObjects];
@@ -86,8 +80,11 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pTextures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Model/DirectTexture.dds", 0);
 
 	CMaterial::m_pIlluminatedShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTextures, 3, false);
+	
 
-	pApacheModel->m_pChild->m_ppMaterials[0]->SetTexture(pTextures); 
+	//질문
+	//pApacheModel->SetTexture(pTextures);
+	//pApacheModel->m_pChild->SetTexture(pTextures); 
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
@@ -184,7 +181,8 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 
 	pd3dRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;  // [고민] 이거 개수 뜻
-	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1]; //t1: gtxtTerrainBaseTexture, t2: gtxtTerrainDetailTexture
+	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1]; 
+	//t1: gtxtTerrainBaseTexture, t2: gtxtTerrainDetailTexture
 	pd3dRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	//샘플러
@@ -223,10 +221,9 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 }
 
 void CScene::CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
-{
+{ //질문
 	UINT ncbElementBytes = ((sizeof(LIGHTS) + 255) & ~255); //256의 배수
 	m_pd3dcbLights = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-
 	m_pd3dcbLights->Map(0, NULL, (void **)&m_pcbMappedLights);
 }
 
@@ -312,7 +309,8 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
 
-	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
+	if (m_pTerrain) 
+		m_pTerrain->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nGameObjects; i++)
 	{

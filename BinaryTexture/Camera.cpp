@@ -21,7 +21,6 @@ CCamera::CCamera()
 	m_nMode = 0x00;
 	m_pPlayer = NULL;
 }
-
 CCamera::CCamera(CCamera *pCamera)
 {
 	if (pCamera)

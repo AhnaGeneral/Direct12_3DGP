@@ -8,16 +8,21 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 CMeshLoadInfo::~CMeshLoadInfo()
 {
-	if (m_pxmf3Positions) delete[] m_pxmf3Positions;
-	if (m_pxmf4Colors) delete[] m_pxmf4Colors;
-	if (m_pxmf3Normals) delete[] m_pxmf3Normals;
-
-	if (m_pnIndices) delete[] m_pnIndices;
-	
-	if (m_pnSubSetIndices) delete[] m_pnSubSetIndices;
-
-	for (int i = 0; i < m_nSubMeshes; i++) if (m_ppnSubSetIndices[i]) delete[] m_ppnSubSetIndices[i];
-	if (m_ppnSubSetIndices) delete[] m_ppnSubSetIndices;
+	if (m_pxmf3Positions)
+		delete[] m_pxmf3Positions;
+	if (m_pxmf4Colors)
+		delete[] m_pxmf4Colors;
+	if (m_pxmf3Normals)
+		delete[] m_pxmf3Normals;
+	if (m_pnIndices)
+		delete[] m_pnIndices;
+	if (m_pnSubSetIndices)
+		delete[] m_pnSubSetIndices;
+	for (int i = 0; i < m_nSubMeshes; i++)
+		if (m_ppnSubSetIndices[i])
+			delete[] m_ppnSubSetIndices[i];
+	if (m_ppnSubSetIndices)
+		delete[] m_ppnSubSetIndices;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,11 +32,9 @@ CMeshFromFile::CMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
 	m_nType = pMeshInfo->m_nType;
 
 	m_pd3dPositionBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pMeshInfo->m_pxmf3Positions, sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dPositionUploadBuffer);
-
 	m_d3dPositionBufferView.BufferLocation = m_pd3dPositionBuffer->GetGPUVirtualAddress();
 	m_d3dPositionBufferView.StrideInBytes = sizeof(XMFLOAT3);
 	m_d3dPositionBufferView.SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
-
 	m_nSubMeshes = pMeshInfo->m_nSubMeshes;
 
 	if (m_nSubMeshes > 0)
@@ -39,7 +42,6 @@ CMeshFromFile::CMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList
 		m_ppd3dSubSetIndexBuffers = new ID3D12Resource*[m_nSubMeshes];
 		m_ppd3dSubSetIndexUploadBuffers = new ID3D12Resource*[m_nSubMeshes];
 		m_pd3dSubSetIndexBufferViews = new D3D12_INDEX_BUFFER_VIEW[m_nSubMeshes];
-
 		m_pnSubSetIndices = new int[m_nSubMeshes];
 
 		for (int i = 0; i < m_nSubMeshes; i++)
@@ -153,8 +155,6 @@ void CMeshIlluminatedFromFile::Render(ID3D12GraphicsCommandList *pd3dCommandList
 		pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
 	}
 }
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
