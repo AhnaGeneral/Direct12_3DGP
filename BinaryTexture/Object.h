@@ -284,3 +284,22 @@ public:
 	float GetWidth() { return(m_nWidth * m_xmf3Scale.x); }
 	float GetLength() { return(m_nLength * m_xmf3Scale.z); }
 };
+
+
+class CSeaWater : public CGameObject
+{
+public:
+	CSeaWater(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, float Width, float  Length, float xmf3Scale);
+	virtual ~CSeaWater();
+
+private:
+	float m_nWidth;
+	float m_nLength;
+	float m_xmf3Scale;
+
+public:
+
+	//XMFLOAT3 GetScale() { return(m_xmf3Scale); }
+	//float GetWidth() { return(m_nWidth * m_xmf3Scale); }
+	//float GetLength() { return(m_nLength * m_xmf3Scale); }
+};

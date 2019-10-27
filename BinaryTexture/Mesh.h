@@ -232,3 +232,26 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
 
 };
+
+class CTexturedVertex 
+{
+public:
+	XMFLOAT2						m_xmf2TexCoord;
+	XMFLOAT3						m_xmf3Position;
+
+public:
+	CTexturedVertex() { m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); }
+	CTexturedVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord) { m_xmf3Position = XMFLOAT3(x, y, z); m_xmf2TexCoord = xmf2TexCoord; }
+	CTexturedVertex(XMFLOAT3 xmf3Position, XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) { m_xmf3Position = xmf3Position; m_xmf2TexCoord = xmf2TexCoord; }
+	~CTexturedVertex() { }
+};
+
+class CWaterSquare : public CMesh
+{
+public:
+	CWaterSquare(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float fWidth , float fHeight , float fDepth );
+	virtual ~CWaterSquare();
+	virtual void ReleaseUploadBuffers();
+	//[질문]subset때문에 지형이 안 만들어 졌음... 뭐지? 
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
+};

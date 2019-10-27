@@ -882,3 +882,40 @@ CHeightMapTerrain::~CHeightMapTerrain(void)
 	if (m_pHeightMapImage) delete m_pHeightMapImage;
 }
 
+CSeaWater::CSeaWater(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ID3D12RootSignature * pd3dGraphicsRootSignature, float Width, float Length, float xmf3Scale)
+{
+	m_nWidth = Width;
+	m_nLength = Length;
+	m_xmf3Scale = xmf3Scale;
+
+
+	CWaterSquare* pMesh = new CWaterSquare(pd3dDevice, pd3dCommandList, m_nWidth, m_nLength, xmf3Scale);
+	SetMesh(pMesh);
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CTexture* pWaterTexture = new CTexture(2, RESOURCE_TEXTURE2D, 0);
+
+
+	pWaterTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/water01.dds", 0);
+	pWaterTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/water02.dds", 1);
+
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
+
+	CWaterShader *pWaterShader = new CWaterShader();
+
+	pWaterShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pWaterShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	pWaterShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 2);
+	pWaterShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, m_pd3dcbGameObjects, ncbElementBytes);
+	pWaterShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pWaterTexture, 4, true);
+
+	SetShader(pWaterShader);
+
+	m_ppMaterials[0]->SetTexture(pWaterTexture);
+
+	SetCbvGPUDescriptorHandle(pWaterShader->GetGPUCbvDescriptorStartHandle());
+}
+
+CSeaWater::~CSeaWater()
+{
+}
