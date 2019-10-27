@@ -93,11 +93,11 @@ VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 
 float4 PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 {
-	//float4 cBaseTexColor = gtxTerrainBaseTexture.Sample(gSamplerState, input.uv0);
-	//float4 cDetailTexColor = gtxTerrainDetailTexture.Sample(gSamplerState, input.uv1);
-	//float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
+	float4 cBaseTexColor = gtxTerrainBaseTexture.Sample(gSamplerState, input.uv0);
+	float4 cDetailTexColor = gtxTerrainDetailTexture.Sample(gSamplerState, input.uv1);
+	float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
 
-	float4 cColor = float4(1,0,0,1);
+	//float4 cColor = float4(1,0,0,1);
 	return(cColor);
 }
 

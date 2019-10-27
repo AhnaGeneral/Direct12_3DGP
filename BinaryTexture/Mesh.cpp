@@ -251,7 +251,7 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsC
 {
 	m_nVertices = nWidth * nLength;
 	//	m_nStride = sizeof(CTexturedVertex);
-	m_nStride = sizeof(CDiffused2TexturedVertex);
+	//m_nStride = sizeof(CDiffused2TexturedVertex);
 	m_nOffset = 0;
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
@@ -282,11 +282,11 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsC
 		}
 	}
 
-	m_pd3dVertexBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
+	m_pd3dVertexBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, sizeof(CDiffused2TexturedVertex) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
 
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
-	m_d3dVertexBufferView.StrideInBytes = m_nStride;
-	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
+	m_d3dVertexBufferView.StrideInBytes = sizeof(CDiffused2TexturedVertex);
+	m_d3dVertexBufferView.SizeInBytes = sizeof(CDiffused2TexturedVertex) * m_nVertices;
 
 	delete[] pVertices;
 
@@ -408,7 +408,7 @@ void CHeightMapGridMesh::ReleaseUploadBuffers()
 	//m_pd3dTexture2UploadBuffer = NULL;
 }
 
-void CHeightMapGridMesh::Render(ID3D12GraphicsCommandList * pd3dCommandList)
+void CHeightMapGridMesh::Render(ID3D12GraphicsCommandList * pd3dCommandList, int nSubSet)
 {
 	
 	pd3dCommandList->IASetPrimitiveTopology(m_d3dPrimitiveTopology);

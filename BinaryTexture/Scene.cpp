@@ -131,7 +131,7 @@ void CScene::ReleaseObjects()
 		delete[] m_ppGameObjects;
 	}
 
-	if (m_pTerrain) delete m_pTerrain;
+	//if (m_pTerrain) delete m_pTerrain;
 
 	ReleaseShaderVariables();
 
@@ -247,7 +247,7 @@ void CScene::ReleaseUploadBuffers()
 {
 	for (int i = 0; i < m_nGameObjects; i++) 
 		m_ppGameObjects[i]->ReleaseUploadBuffers();
-	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
+	//if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 
 }
 
