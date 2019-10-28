@@ -296,10 +296,4 @@ private:
 	float m_nWidth;
 	float m_nLength;
 	float m_xmf3Scale;
-
-public:
-
-	//XMFLOAT3 GetScale() { return(m_xmf3Scale); }
-	//float GetWidth() { return(m_nWidth * m_xmf3Scale); }
-	//float GetLength() { return(m_nLength * m_xmf3Scale); }
 };

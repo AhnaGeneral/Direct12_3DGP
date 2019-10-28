@@ -101,6 +101,9 @@ float4 PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 	return(cColor);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Texture2D gtxWaterTexture: register(t3);
+
 struct VS_WATER_INPUT
 {
 	float3 position : POSITION;
@@ -113,7 +116,7 @@ struct VS_WATER_OUTPUT
 	float2 uv : TEXCOORD;
 };
 
-VS_WATER_OUTPUT VSWatered(VS_WATER_INPUT input)
+VS_WATER_OUTPUT VSWater(VS_WATER_INPUT input)
 {
 	VS_WATER_OUTPUT output;
 
@@ -123,9 +126,9 @@ VS_WATER_OUTPUT VSWatered(VS_WATER_INPUT input)
 	return(output);
 }
 
-float4 PSWatered(VS_TEXTURED_OUTPUT input) : SV_TARGET
+float4 PSWater(VS_TEXTURED_OUTPUT input) : SV_TARGET
 {
-	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
+	float4 cColor = gtxWaterTexture.Sample(gSamplerState, input.uv);
 
 	return(cColor);
 }

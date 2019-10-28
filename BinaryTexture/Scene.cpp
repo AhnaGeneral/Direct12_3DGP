@@ -67,7 +67,9 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.5f, 0.0f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 257, 257, xmf3Scale, xmf4Color);
-	
+
+	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 12.0f, 12.0f, 12.0f);
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	m_nGameObjects = 4;
 	m_ppGameObjects = new CGameObject*[m_nGameObjects];
@@ -142,7 +144,7 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 {
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
 
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[2];
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -156,7 +158,13 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dDescriptorRanges[1].RegisterSpace = 0;
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[5];
+	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[2].NumDescriptors = 1; 
+	pd3dDescriptorRanges[2].BaseShaderRegister = 3;  // t3: gtxWaterTexture
+	pd3dDescriptorRanges[2].RegisterSpace = 0;
+	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	D3D12_ROOT_PARAMETER pd3dRootParameters[6];
 
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[0].Descriptor.ShaderRegister = 1; //Camera
@@ -181,9 +189,13 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 
 	pd3dRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;  // [°í¹Î] ÀÌ°Å °³¼ö ¶æ
-	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1]; 
-	//t1: gtxtTerrainBaseTexture, t2: gtxtTerrainDetailTexture
+	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];  //t1: gtxtTerrainBaseTexture, t2: gtxtTerrainDetailTexture
 	pd3dRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	pd3dRootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[5].DescriptorTable.NumDescriptorRanges = 1;  // water
+	pd3dRootParameters[5].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
+	pd3dRootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	//»ùÇÃ·¯
 	D3D12_STATIC_SAMPLER_DESC d3dSamplerDesc;
@@ -311,6 +323,8 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 
 	if (m_pTerrain) 
 		m_pTerrain->Render(pd3dCommandList, pCamera);
+	if (pWaterMesh)
+		pWaterMesh->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nGameObjects; i++)
 	{

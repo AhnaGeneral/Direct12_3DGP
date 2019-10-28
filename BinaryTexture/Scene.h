@@ -65,7 +65,7 @@ public:
 
 	CPlayer *m_pPlayer = NULL;
 	CHeightMapTerrain * m_pTerrain = NULL;
-
+	CSeaWater* pWaterMesh = NULL;
 public:
 	ID3D12RootSignature			*m_pd3dGraphicsRootSignature = NULL;
 
