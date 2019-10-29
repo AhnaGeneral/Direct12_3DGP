@@ -69,6 +69,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 257, 257, xmf3Scale, xmf4Color);
 
 	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 12.0f, 12.0f, 12.0f);
+	pWaterMesh->SetPosition(XMFLOAT3(500.f, m_pTerrain->GetHeight(500.f, 500.f)+30.f , 500.f));
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	m_nGameObjects = 4;
@@ -86,12 +87,13 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	//Áú¹®
 	//pApacheModel->SetTexture(pTextures);
-	//pApacheModel->m_pChild->SetTexture(pTextures); 
+	pApacheModel->m_pChild->SetTexture(pTextures); 
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(+130.0f, 0.0f, 160.0f);
+
+	pApacheObject->SetPosition(XMFLOAT3(500.f + 130.f, m_pTerrain->GetHeight(630.f, 660.f) + 3.f, 660.f));
 	pApacheObject->SetScale(1.0f, 1.0f, 1.0f);
 	pApacheObject->Rotate(0.0f, 90.0f, 0.0f);
 	m_ppGameObjects[0] = pApacheObject;
@@ -99,7 +101,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(-75.0f, 0.0f, 80.0f);
+	pApacheObject->SetPosition(XMFLOAT3(500.f + 100.f, m_pTerrain->GetHeight(600.f, 580.f) + 3.f, 580.f));
 	pApacheObject->SetScale(1.0f, 1.0f, 1.0f);
 	pApacheObject->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppGameObjects[1] = pApacheObject;
@@ -107,7 +109,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(-115.0f, 50.0f, 180.0f);
+	
+	pApacheObject->SetPosition(XMFLOAT3(350.f, m_pTerrain->GetHeight(350.f, 680.f) + 30.f, 680.f));
 	pApacheObject->SetScale(1.0f, 1.0f, 1.0f);
 	pApacheObject->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppGameObjects[2] = pApacheObject;
@@ -115,7 +118,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(95.0f, 50.0f, 280.0f);
+	pApacheObject->SetPosition(XMFLOAT3(590.f, m_pTerrain->GetHeight(590.f, 780.f) + 30.f, 780.f));
 	pApacheObject->SetScale(1.0f, 1.0f, 1.0f);
 	pApacheObject->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppGameObjects[3] = pApacheObject;
@@ -160,7 +163,7 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 
 	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[2].NumDescriptors = 1; 
-	pd3dDescriptorRanges[2].BaseShaderRegister = 3;  // t3: gtxWaterTexture
+	pd3dDescriptorRanges[2].BaseShaderRegister = 3;  // t3: 
 	pd3dDescriptorRanges[2].RegisterSpace = 0;
 	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 

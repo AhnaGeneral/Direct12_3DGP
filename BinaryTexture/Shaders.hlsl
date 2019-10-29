@@ -126,10 +126,10 @@ VS_WATER_OUTPUT VSWater(VS_WATER_INPUT input)
 	return(output);
 }
 
-float4 PSWater(VS_TEXTURED_OUTPUT input) : SV_TARGET
+float4 PSWater(VS_WATER_OUTPUT input) : SV_TARGET
 {
 	float4 cColor = gtxWaterTexture.Sample(gSamplerState, input.uv);
-
+	//float4 cColor = (1.0f, 1.0f, 0.0f, 1.0f);
 	return(cColor);
 }
 

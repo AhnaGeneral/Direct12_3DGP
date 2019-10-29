@@ -888,13 +888,13 @@ CSeaWater::CSeaWater(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	m_nLength = Length;
 	m_xmf3Scale = xmf3Scale;
 
-	CWaterSquare* pMesh = new CWaterSquare(pd3dDevice, pd3dCommandList, m_nWidth, m_nLength, xmf3Scale);
+	CWaterSquare* pMesh = new CWaterSquare(pd3dDevice, pd3dCommandList, m_nWidth, m_nLength, m_xmf3Scale);
 	SetMesh(pMesh);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CTexture* pWaterTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
 
-	pWaterTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/water01.dds", 0);
+	pWaterTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/water02.dds", 0);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
 
@@ -908,7 +908,8 @@ CSeaWater::CSeaWater(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	SetShader(pWaterShader);
 
 	m_ppMaterials[0]->SetTexture(pWaterTexture);
-	SetCbvGPUDescriptorHandle(pWaterShader->GetGPUCbvDescriptorStartHandle());
+	SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize));
+	//SetCbvGPUDescriptorHandle(pWaterShader->GetGPUCbvDescriptorStartHandle());
 }
 
 CSeaWater::~CSeaWater()

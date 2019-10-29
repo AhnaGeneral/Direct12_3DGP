@@ -390,7 +390,7 @@ CWaterSquare::CWaterSquare(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	float fx = fWidth * 0.5f, fy = fHeight * 0.5f, fz = fDepth * 0.5f;
+	float fx = fWidth * 2.0f, fy = fHeight * 2.0f, fz = fDepth * 2.0f; // 200.f , 200.f , 200.f 
 
 	CTexturedVertex pVertices[36];
 	int i = 0;
@@ -443,17 +443,17 @@ CWaterSquare::CWaterSquare(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *
 	pVertices[i++] = CTexturedVertex(XMFLOAT3(+fx, -fy, +fz), XMFLOAT2(1.0f, 1.0f));
 	pVertices[i++] = CTexturedVertex(XMFLOAT3(+fx, -fy, -fz), XMFLOAT2(0.0f, 1.0f));
 
-	m_pd3dVertexBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
+	m_pd3dVertexBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, sizeof(CTexturedVertex) * m_nVertices, 
+		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
 
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
-	m_d3dVertexBufferView.StrideInBytes = m_nStride;
-	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
+	m_d3dVertexBufferView.StrideInBytes = sizeof(CTexturedVertex);
+	m_d3dVertexBufferView.SizeInBytes = sizeof(CTexturedVertex) * m_nVertices;
 }
 
 CWaterSquare::~CWaterSquare()
 {
 	if (m_pd3dVertexBuffer) m_pd3dVertexBuffer->Release();
-
 }
 
 void CWaterSquare::ReleaseUploadBuffers()
