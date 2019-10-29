@@ -789,7 +789,7 @@ CGameObject *CGameObject::LoadGeometryFromFile(ID3D12Device *pd3dDevice, ID3D12G
 //CRevolvingObject::CRevolvingObject()
 //{
 //	m_xmf3RevolutionAxis = XMFLOAT3(1.0f, 0.0f, 0.0f);
-//	m_fRevolutionSpeed = 0.0f;
+//	m_fRevolution= 0.0f;
 //}
 //
 //CRevolvingObject::~CRevolvingObject()
@@ -798,7 +798,7 @@ CGameObject *CGameObject::LoadGeometryFromFile(ID3D12Device *pd3dDevice, ID3D12G
 //
 //void CRevolvingObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 //{
-//	XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&m_xmf3RevolutionAxis), XMConvertToRadians(m_fRevolutionSpeed * fTimeElapsed));
+//	XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&m_xmf3RevolutionAxis), XMConvertToRadians(m_fRevolutio* fTimeElapsed));
 //	m_xmf4x4Transform = Matrix4x4::Multiply(m_xmf4x4Transform, mtxRotate);
 //
 //	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
@@ -857,8 +857,8 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 	CTexture* pTerrainTexture = new CTexture(2, RESOURCE_TEXTURE2D, 0);
 
 
-	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/Base_Texture.dds", 0);
-	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/Detail_Texture_7.dds", 1);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/field.dds", 0);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/Detail_Texture.dds", 1);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
 
@@ -894,7 +894,7 @@ CSeaWater::CSeaWater(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 
 	CTexture* pWaterTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
 
-	pWaterTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/water02.dds", 0);
+	pWaterTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/water01.dds", 0);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
 

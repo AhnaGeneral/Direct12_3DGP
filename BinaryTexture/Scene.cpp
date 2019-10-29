@@ -65,11 +65,11 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	BuildDefaultLightsAndMaterials();
 
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
-	XMFLOAT4 xmf4Color(0.0f, 0.5f, 0.0f, 0.0f);
+	XMFLOAT4 xmf4Color(0.0f, 0.5f, 0.05f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 257, 257, xmf3Scale, xmf4Color);
 
-	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 12.0f, 12.0f, 12.0f);
-	pWaterMesh->SetPosition(XMFLOAT3(500.f, m_pTerrain->GetHeight(500.f, 500.f)+30.f , 500.f));
+	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 500.0f, 0.05f, 500.0f);
+	pWaterMesh->SetPosition(XMFLOAT3(1000.f, m_pTerrain->GetHeight(500.f, 500.f)-10.f , 1000.f));
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	m_nGameObjects = 4;

@@ -236,8 +236,10 @@ public:
 class CTexturedVertex 
 {
 public:
-	XMFLOAT2						m_xmf2TexCoord;
+	//선언하는 순서도 아주 중요하다 !! 
+	//선언하는 순서와 셰이더의 변수와 순서가 맞지 않으면 제대로 렌더링이 안된다.
 	XMFLOAT3						m_xmf3Position;
+	XMFLOAT2						m_xmf2TexCoord;
 
 public:
 	CTexturedVertex() { m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); }
