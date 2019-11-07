@@ -257,3 +257,13 @@ public:
 	//[질문]subset때문에 지형이 안 만들어 졌음... 뭐지? 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
 };
+
+class CBillboardRectMesh : public CMesh
+{
+public:
+	CBillboardRectMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList,
+		float fWidth, float fHeight, float fDepth, float fxPosition, float fyPosition, float fzPosition);
+	virtual ~CBillboardRectMesh();
+	virtual void ReleaseUploadBuffers();
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
+};

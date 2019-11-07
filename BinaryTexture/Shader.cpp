@@ -504,3 +504,31 @@ D3D12_BLEND_DESC CWaterShader::CreateBlendState()
 
 	return(d3dBlendDesc);
 }
+
+//[CBillboardShader]======================================================================
+CBillboardShader::CBillboardShader()
+{
+}
+
+CBillboardShader::~CBillboardShader()
+{
+}
+
+D3D12_INPUT_LAYOUT_DESC CBillboardShader::CreateInputLayout()
+{
+	return D3D12_INPUT_LAYOUT_DESC();
+}
+
+D3D12_SHADER_BYTECODE CBillboardShader::CreateVertexShader()
+{
+	return D3D12_SHADER_BYTECODE();
+}
+
+D3D12_SHADER_BYTECODE CBillboardShader::CreatePixelShader()
+{
+	return D3D12_SHADER_BYTECODE();
+}
+
+void CBillboardShader::CreateShader(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ID3D12RootSignature * pd3dGraphicsRootSignature)
+{
+}

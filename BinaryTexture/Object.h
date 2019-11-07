@@ -299,3 +299,15 @@ private:
 	float m_nLength;
 	float m_xmf3Scale;
 };
+
+class CBillboard : public CGameObject
+{
+public:
+	CBillboard(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList,
+		ID3D12RootSignature *pd3dGraphicsRootSignature, float fWidth, float fHeight, float fDepth, float fPosX, float fPosY, float fPosZ);
+	virtual ~CBillboard();
+
+	virtual void Animate(float fTimeElapsed, CCamera* pCamera);
+	void SetLookAt(XMFLOAT3& xmf3TargetCamera);
+
+};
