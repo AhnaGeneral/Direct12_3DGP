@@ -307,7 +307,7 @@ public:
 		ID3D12RootSignature *pd3dGraphicsRootSignature, float fWidth, float fHeight, float fDepth, float fPosX, float fPosY, float fPosZ);
 	virtual ~CBillboard();
 
-	virtual void Animate(float fTimeElapsed, CCamera* pCamera);
+	virtual void Animates(float fTimeElapsed, CCamera* pCamera);
 	void SetLookAt(XMFLOAT3& xmf3TargetCamera);
 
 };

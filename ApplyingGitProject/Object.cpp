@@ -921,7 +921,6 @@ CBillboard::CBillboard
 (ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ID3D12RootSignature * pd3dGraphicsRootSignature,
 	float fWidth, float fHeight, float fDepth, float fPosX, float fPosY, float fPosZ)
 {
-
 	CBillboardRectMesh* pBillboardMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, fWidth, fHeight, fDepth, fPosX, fPosY, fPosZ);
 	SetMesh(pBillboardMesh);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -936,9 +935,9 @@ CBillboard::CBillboard
 
 	pBillboardShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pBillboardShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	pBillboardShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 2);
+	pBillboardShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
 	pBillboardShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, m_pd3dcbGameObjects, ncbElementBytes);
-	pBillboardShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pFreeTexture, 5, false);
+	pBillboardShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pFreeTexture, 6, false);
 	SetShader(pBillboardShader);
 
 	m_ppMaterials[0]->SetTexture(pFreeTexture);
@@ -961,7 +960,7 @@ void CBillboard::SetLookAt(XMFLOAT3 & xmf3TargetCamera)
 	m_xmf4x4World._31 = xmf3Look.x; m_xmf4x4World._32 = xmf3Look.y; m_xmf4x4World._33 = xmf3Look.y;
 }
 
-void CBillboard::Animate(float fTimeElapsed, CCamera * pCamera)
+void CBillboard::Animates(float fTimeElapsed, CCamera * pCamera)
 {
 	XMFLOAT3 xmf3UpdateCameraPosition = pCamera->GetPosition();
 	SetLookAt(xmf3UpdateCameraPosition);

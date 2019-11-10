@@ -71,6 +71,9 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 500.0f, 0.05f, 500.0f);
 	pWaterMesh->SetPosition(XMFLOAT3(1000.f, m_pTerrain->GetHeight(500.f, 500.f)-10.f , 1000.f));
 
+	pBillboard = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 120.0f, 200.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	pBillboard->SetPosition(0.0f, 0.0f, 0.0f);
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	m_nGameObjects = 4;
 	m_ppGameObjects = new CGameObject*[m_nGameObjects];
@@ -147,7 +150,7 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 {
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
 
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[4];
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -162,12 +165,19 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[2].NumDescriptors = 1; 
+	pd3dDescriptorRanges[2].NumDescriptors = 1;
 	pd3dDescriptorRanges[2].BaseShaderRegister = 3;  // t3: 
 	pd3dDescriptorRanges[2].RegisterSpace = 0;
 	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[6];
+	pd3dDescriptorRanges[3].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[3].NumDescriptors = 1;
+	pd3dDescriptorRanges[3].BaseShaderRegister = 4;  // t3: 
+	pd3dDescriptorRanges[3].RegisterSpace = 0;
+	pd3dDescriptorRanges[3].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+
+	D3D12_ROOT_PARAMETER pd3dRootParameters[7];
 
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[0].Descriptor.ShaderRegister = 1; //Camera
@@ -186,7 +196,7 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	pd3dRootParameters[3].DescriptorTable.NumDescriptorRanges = 1;  
+	pd3dRootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
 	pd3dRootParameters[3].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[0];
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
@@ -199,6 +209,11 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dRootParameters[5].DescriptorTable.NumDescriptorRanges = 1;  // water
 	pd3dRootParameters[5].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
 	pd3dRootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	pd3dRootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[6].DescriptorTable.NumDescriptorRanges = 1;  // billboard
+	pd3dRootParameters[6].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[3];
+	pd3dRootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	//»ùÇÃ·¯
 	D3D12_STATIC_SAMPLER_DESC d3dSamplerDesc;
@@ -328,7 +343,11 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 		m_pTerrain->Render(pd3dCommandList, pCamera);
 	if (pWaterMesh)
 		pWaterMesh->Render(pd3dCommandList, pCamera);
-
+	if (pBillboard)
+	{
+		pBillboard->Render(pd3dCommandList, pCamera);
+		pBillboard->Animates(m_fElapsedTime, pCamera);
+	}
 	for (int i = 0; i < m_nGameObjects; i++)
 	{
 		if (m_ppGameObjects[i])
