@@ -71,8 +71,9 @@ public:
 	ID3D12RootSignature			*m_pd3dGraphicsRootSignature = NULL;
 
 	CGameObject					**m_ppGameObjects = NULL;
+	CGameObject					**m_ppBillboardObj = NULL;
 	int							m_nGameObjects = 0;
-
+	int m_nObjects = 0;
 	LIGHT						*m_pLights = NULL;
 	int							m_nLights = 0;
 

@@ -927,7 +927,7 @@ CBillboard::CBillboard
 
 	CTexture* pFreeTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
 
-	pFreeTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/TreeGreen.dds", 0);
+	pFreeTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/flower_white.dds", 0);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
 

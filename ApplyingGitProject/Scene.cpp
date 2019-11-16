@@ -71,9 +71,43 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 500.0f, 0.05f, 500.0f);
 	pWaterMesh->SetPosition(XMFLOAT3(1000.f, m_pTerrain->GetHeight(500.f, 500.f)-10.f , 1000.f));
 
-	pBillboard = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 120.0f, 200.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	pBillboard->SetPosition(0.0f, 0.0f, 0.0f);
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	float fxPitch = 12.0f * 10.0f;
+	float fyPitch = 12.0f * 10.0f;
+	float fzPitch = 12.0f * 10.0f;
 
+	float fTerrainWidth = m_pTerrain->GetWidth();
+	float fTerrainLength = m_pTerrain->GetLength();
+
+	int xObjects = 10;
+	int yObjects = 1;
+	int zObjects = 8;
+	m_nObjects = (xObjects * yObjects * zObjects);
+
+	m_ppBillboardObj = new CGameObject*[m_nObjects];
+
+	//pBillboard = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 120.0f, 200.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	//pBillboard->SetPosition(0.0f, 0.0f, 0.0f);
+
+	XMFLOAT3 xmf3SurfaceNormal;
+	for (int i = 0, x = 0; x < xObjects; x++)
+	{
+		for (int z = 0; z < zObjects; z++)
+		{
+			pBillboard = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 70.0f, 140.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+			float xPosition = x * fxPitch;
+			float zPosition = z * fzPitch;
+			float fHeight = m_pTerrain->GetHeight(xPosition, zPosition);
+
+			if ((m_pTerrain->GetHeight(500.f, 500.f) - 10.f) < fHeight)
+				pBillboard->SetPosition(xPosition, fHeight + 50.0f, zPosition);
+
+			//pRotatingObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i));
+			m_ppBillboardObj[i++] = pBillboard;
+
+		}
+	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	m_nGameObjects = 4;
 	m_ppGameObjects = new CGameObject*[m_nGameObjects];
@@ -139,6 +173,11 @@ void CScene::ReleaseObjects()
 		delete[] m_ppGameObjects;
 	}
 
+	if (m_ppBillboardObj)
+	{
+		for (int i = 0; i < m_nObjects; i++) if (m_ppBillboardObj[i]) m_ppBillboardObj[i]->Release();
+		delete[] m_ppBillboardObj;
+	}
 	//if (m_pTerrain) delete m_pTerrain;
 
 	ReleaseShaderVariables();
@@ -278,6 +317,8 @@ void CScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nGameObjects; i++) 
 		m_ppGameObjects[i]->ReleaseUploadBuffers();
 	//if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
+	for (int i = 0; i < m_nObjects; i++)
+		m_ppBillboardObj[i]->ReleaseUploadBuffers();
 
 }
 
@@ -343,10 +384,15 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 		m_pTerrain->Render(pd3dCommandList, pCamera);
 	if (pWaterMesh)
 		pWaterMesh->Render(pd3dCommandList, pCamera);
-	if (pBillboard)
+
+	for (int i = 0; i < m_nObjects; i++)
 	{
-		pBillboard->Render(pd3dCommandList, pCamera);
-		pBillboard->Animates(m_fElapsedTime, pCamera);
+		if (m_ppBillboardObj[i])
+		{
+			//m_ppBillboardObj[i]->UpdateTransform(NULL);
+			m_ppBillboardObj[i]->Render(pd3dCommandList, pCamera);
+			m_ppBillboardObj[i]->Animates(m_fElapsedTime, pCamera);
+		}
 	}
 	for (int i = 0; i < m_nGameObjects; i++)
 	{
