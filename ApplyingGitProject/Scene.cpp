@@ -70,6 +70,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 500.0f, 0.05f, 500.0f);
 	pWaterMesh->SetPosition(XMFLOAT3(1000.f, m_pTerrain->GetHeight(500.f, 500.f)-10.f , 1000.f));
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	float fxPitch = 12.0f * 10.0f;
@@ -84,18 +85,23 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	int zObjects = 8;
 	m_nObjects = (xObjects * yObjects * zObjects);
 
+	CBillboardRectMesh* StartViewMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, 250.0f, 140.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	//StartView = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 70.0f, 140.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	StartView = new CStartView(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature); 
+	StartView->SetMesh(StartViewMesh);
+	StartView->SetPosition(XMFLOAT3(1200.0f,m_pTerrain->GetHeight(1200.0f, 1200.0f) + 50.f, 1200.0f));
+
+
 	m_ppBillboardObj = new CGameObject*[m_nObjects];
+	CBillboardRectMesh* pBillboardMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, 50.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	//SetMesh(pBillboardMesh);
 
-	//pBillboard = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 120.0f, 200.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	//pBillboard->SetPosition(0.0f, 0.0f, 0.0f);
-
-	XMFLOAT3 xmf3SurfaceNormal;
 	for (int i = 0, x = 0; x < xObjects; x++)
 	{
 		for (int z = 0; z < zObjects; z++)
 		{
-			pBillboard = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 70.0f, 140.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-
+            pBillboard = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 50.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	        pBillboard->SetMesh(pBillboardMesh); 
 			float xPosition = x * fxPitch;
 			float zPosition = z * fzPitch;
 			float fHeight = m_pTerrain->GetHeight(xPosition, zPosition);
@@ -109,10 +115,14 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 		}
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	m_nGameObjects = 4;
+
+	m_nGameObjects = 7;
 	m_ppGameObjects = new CGameObject*[m_nGameObjects];
 	//[질문]알수없음 왜 Child에 들어가 있는거지 
-	CGameObject *pApacheModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Mi28.bin");
+
+	CGameObject *pApacheModel = 
+		CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Mi28.bin");
+
 	CApacheObject* pApacheObject = NULL;
 
 	CTexture *pTextures;
@@ -129,36 +139,52 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-
-	pApacheObject->SetPosition(XMFLOAT3(500.f + 130.f, m_pTerrain->GetHeight(630.f, 660.f) + 3.f, 660.f));
-	pApacheObject->SetScale(1.0f, 1.0f, 1.0f);
-	pApacheObject->Rotate(0.0f, 90.0f, 0.0f);
+	pApacheObject->SetPosition(XMFLOAT3(1700.0f, m_pTerrain->GetHeight(1700.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	m_ppGameObjects[0] = pApacheObject;
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(500.f + 100.f, m_pTerrain->GetHeight(600.f, 580.f) + 3.f, 580.f));
-	pApacheObject->SetScale(1.0f, 1.0f, 1.0f);
-	pApacheObject->Rotate(0.0f, -90.0f, 0.0f);
+	pApacheObject->SetPosition(XMFLOAT3(1800.0f, m_pTerrain->GetHeight(1800.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	m_ppGameObjects[1] = pApacheObject;
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
 	
-	pApacheObject->SetPosition(XMFLOAT3(350.f, m_pTerrain->GetHeight(350.f, 680.f) + 30.f, 680.f));
-	pApacheObject->SetScale(1.0f, 1.0f, 1.0f);
-	pApacheObject->Rotate(0.0f, -90.0f, 0.0f);
+	pApacheObject->SetPosition(XMFLOAT3(1900.0f, m_pTerrain->GetHeight(1900.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	m_ppGameObjects[2] = pApacheObject;
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(590.f, m_pTerrain->GetHeight(590.f, 780.f) + 30.f, 780.f));
-	pApacheObject->SetScale(1.0f, 1.0f, 1.0f);
-	pApacheObject->Rotate(0.0f, -90.0f, 0.0f);
+	pApacheObject->SetPosition(XMFLOAT3(1850.0f, m_pTerrain->GetHeight(1850.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	m_ppGameObjects[3] = pApacheObject;
+
+	pApacheObject = new CApacheObject();
+	pApacheObject->SetChild(pApacheModel, true);
+	pApacheObject->OnInitialize();
+	pApacheObject->SetPosition(XMFLOAT3(1750.0f, m_pTerrain->GetHeight(1750.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	m_ppGameObjects[4] = pApacheObject;
+
+	pApacheObject = new CApacheObject();
+	pApacheObject->SetChild(pApacheModel, true);
+	pApacheObject->OnInitialize();
+	pApacheObject->SetPosition(XMFLOAT3(1650.0f, m_pTerrain->GetHeight(1650.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	m_ppGameObjects[5] = pApacheObject;
+
+	pApacheObject = new CApacheObject();
+	pApacheObject->SetChild(pApacheModel, true);
+	pApacheObject->OnInitialize();
+	pApacheObject->SetPosition(XMFLOAT3(1600.0f, m_pTerrain->GetHeight(1600.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	m_ppGameObjects[6] = pApacheObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -189,7 +215,7 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 {
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
 
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[4];
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[5];
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -198,8 +224,8 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	pd3dDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[1].NumDescriptors = 2; //Texture가 2개라 Descriptors도 2개
-	pd3dDescriptorRanges[1].BaseShaderRegister = 1; //t1: gtxtTerrainBaseTexture, t2: gtxtTerrainDetailTexture
+	pd3dDescriptorRanges[1].NumDescriptors = 2; 
+	pd3dDescriptorRanges[1].BaseShaderRegister = 1; 
 	pd3dDescriptorRanges[1].RegisterSpace = 0;
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
@@ -211,12 +237,18 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 
 	pd3dDescriptorRanges[3].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[3].NumDescriptors = 1;
-	pd3dDescriptorRanges[3].BaseShaderRegister = 4;  // t3: 
+	pd3dDescriptorRanges[3].BaseShaderRegister = 4;  // t4: 
 	pd3dDescriptorRanges[3].RegisterSpace = 0;
 	pd3dDescriptorRanges[3].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	pd3dDescriptorRanges[4].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[4].NumDescriptors = 1;
+	pd3dDescriptorRanges[4].BaseShaderRegister = 5;  // t4: 
+	pd3dDescriptorRanges[4].RegisterSpace = 0;
+	pd3dDescriptorRanges[4].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[7];
+
+	D3D12_ROOT_PARAMETER pd3dRootParameters[8];
 
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[0].Descriptor.ShaderRegister = 1; //Camera
@@ -239,9 +271,11 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dRootParameters[3].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[0];
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+
 	pd3dRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;  // [고민] 이거 개수 뜻
-	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];  //t1: gtxtTerrainBaseTexture, t2: gtxtTerrainDetailTexture
+	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;  
+	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];  
+	//t1: gtxtTerrainBaseTexture, t2: gtxtTerrainDetailTexture
 	pd3dRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	pd3dRootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
@@ -253,6 +287,11 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dRootParameters[6].DescriptorTable.NumDescriptorRanges = 1;  // billboard
 	pd3dRootParameters[6].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[3];
 	pd3dRootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	pd3dRootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[7].DescriptorTable.NumDescriptorRanges = 1;  // 
+	pd3dRootParameters[7].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[4];
+	pd3dRootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	//샘플러
 	D3D12_STATIC_SAMPLER_DESC d3dSamplerDesc;
@@ -380,6 +419,8 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
 
+	if(StartView)
+		StartView->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) 
 		m_pTerrain->Render(pd3dCommandList, pCamera);
 	if (pWaterMesh)

@@ -56,7 +56,7 @@ void CTexture::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
 	else
 	{
 		pd3dCommandList->SetGraphicsRootDescriptorTable(m_pRootArgumentInfos[0].m_nRootParameterIndex, m_pRootArgumentInfos[0].m_d3dSrvGpuDescriptorHandle);
-
+		//pd3dCommandList->SetGraphicsRootDescriptorTable(m_pRootArgumentInfos[1].m_nRootParameterIndex, m_pRootArgumentInfos[0].m_d3dSrvGpuDescriptorHandle);
 	}
 }
 
@@ -220,6 +220,7 @@ void CGameObject::SetTexture(CTexture * tex)
 	if (m_pSibling) m_pSibling->SetTexture(tex);
 }
 
+
 void CGameObject::SetMesh(CMesh *pMesh)
 {
 	if (m_pMesh) m_pMesh->Release();
@@ -267,9 +268,7 @@ CGameObject *CGameObject::FindFrame(char *pstrFrameName)
 void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
 	OnPrepareRender();
-
 	UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
-
 	if (m_nMaterials > 0)
 	{
 		for (int i = 0; i < m_nMaterials; i++)
@@ -287,8 +286,6 @@ void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pC
 		}
 
 	}
-
-
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 }
@@ -822,6 +819,7 @@ void CApacheObject::OnInitialize()
 	m_pTailRotorFrame = FindFrame("roter2");
 }
 
+
 void CApacheObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 {
 	if (m_pMainRotorFrame)
@@ -834,8 +832,6 @@ void CApacheObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 		XMMATRIX xmmtxRotate = XMMatrixRotationZ(XMConvertToRadians(30.0f) * fTimeElapsed);
 		m_pTailRotorFrame->m_xmf4x4Transform = Matrix4x4::Multiply(xmmtxRotate, m_pTailRotorFrame->m_xmf4x4Transform);
 	}
-
-	//   CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
 }
 
 CHeightMapTerrain::CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, 
@@ -964,4 +960,34 @@ void CBillboard::Animates(float fTimeElapsed, CCamera * pCamera)
 {
 	XMFLOAT3 xmf3UpdateCameraPosition = pCamera->GetPosition();
 	SetLookAt(xmf3UpdateCameraPosition);
+}
+
+
+
+CStartView::CStartView
+(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ID3D12RootSignature * pd3dGraphicsRootSignature)
+{
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CTexture* pFreeTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
+
+	pFreeTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/StartView.dds", 0);
+
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
+
+	CStartShader *pBillboardShader = new CStartShader();
+
+	pBillboardShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pBillboardShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	pBillboardShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
+	pBillboardShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, m_pd3dcbGameObjects, ncbElementBytes);
+	pBillboardShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pFreeTexture, 7, false);
+	SetShader(pBillboardShader);
+
+	m_ppMaterials[0]->SetTexture(pFreeTexture);
+	SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize));
+}
+
+CStartView::~CStartView()
+{
 }

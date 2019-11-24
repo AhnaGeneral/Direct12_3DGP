@@ -166,15 +166,15 @@ public:
     virtual ~CGameObject();
 
 public:
-	char	 m_pstrFrameName[64];
-	CMesh	*m_pMesh = NULL;
-	CMesh	**m_ppMeshes ;
+	char m_pstrFrameName[64];
+	CMesh* m_pMesh = NULL;
+	CMesh** m_ppMeshes ;
 	int m_nMeshes;
 	int m_nMaterials = 0;
 	CMaterial **m_ppMaterials = NULL;
 
 	D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dCbvGPUDescriptorHandle;
-	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorStartHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dCbvGPUDescriptorStartHandle;
 
 
 	XMFLOAT4X4 m_xmf4x4Transform;
@@ -309,5 +309,14 @@ public:
 
 	virtual void Animates(float fTimeElapsed, CCamera* pCamera);
 	void SetLookAt(XMFLOAT3& xmf3TargetCamera);
+
+};
+
+
+class CStartView : public CGameObject
+{
+public:
+	CStartView(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
+	virtual ~CStartView();
 
 };

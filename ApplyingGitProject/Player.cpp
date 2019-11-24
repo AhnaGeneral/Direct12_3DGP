@@ -160,10 +160,10 @@ void CPlayer::Update(float fTimeElapsed)
 	Move(xmf3Velocity, false);
 
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
+	if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fTimeElapsed);
 
 	DWORD nCurrentCameraMode = m_pCamera->GetMode();
 	if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position, fTimeElapsed);
-	if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fTimeElapsed);
 	if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
 	m_pCamera->RegenerateViewMatrix();
 
@@ -236,15 +236,18 @@ void CPlayer::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CAirplanePlayer
 
-CAirplanePlayer::CAirplanePlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
+CAirplanePlayer::CAirplanePlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void*pContext)
 {
 	m_pCamera = ChangeCamera(/*SPACESHIP_CAMERA*/THIRD_PERSON_CAMERA, 0.0f);
 
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext; 
 	CTexture *pTextures;
 	pTextures = new CTexture(1, RESOURCE_TEXTURE2D, 0);
 	pTextures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Model/HelicopterTexture.dds", 0);
 
 	CMaterial::m_pIlluminatedShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTextures, 3, false);
+	SetPlayerUpdatedContext(pTerrain); //플레이어의 위치가 변경 될대 지형의 정보에 따라 플레이어의 위치를 변경할 수 있도록 설정
+	SetCameraUpdatedContext(pTerrain); //카메라의 위치가 변경될 때 지형의 정보에 따라 카메라의 위치를 변경할 수 있도록 한다.
 
 	//pApacheModel->m_pChild->m_ppMaterials[0]->SetTexture(pTextures);
 
@@ -252,6 +255,7 @@ CAirplanePlayer::CAirplanePlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommand
 	pGameObject->m_pChild->SetTexture(pTextures);
 	//CApacheObject* pApacheObject = NULL;
 	//pApacheObject->SetChild(pGameObject, true); 
+
 	pGameObject->Rotate(15.0f, 0.0f, 0.0f);
 	SetChild(pGameObject, true);
 	OnInitialize();
@@ -288,6 +292,43 @@ void CAirplanePlayer::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 void CAirplanePlayer::OnPrepareRender()
 {
 	CPlayer::OnPrepareRender();
+}
+
+void CAirplanePlayer::OnPlayerUpdateCallback(float fTimeElapsed)
+{
+	XMFLOAT3 xmf3PlayerPosition = GetPosition(); 
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)m_pPlayerUpdatedContext; 
+	float fHeight = pTerrain->GetHeight(xmf3PlayerPosition.x, xmf3PlayerPosition.z) + 10.0f;
+	
+	if (xmf3PlayerPosition.y < fHeight) 
+	{ 
+		XMFLOAT3 xmf3PlayerVelocity = GetVelocity();
+		xmf3PlayerVelocity.y = 0.0f;
+		SetVelocity(xmf3PlayerVelocity); 
+		xmf3PlayerPosition.y = fHeight; 
+		SetPosition(xmf3PlayerPosition); 
+	}
+}
+
+void CAirplanePlayer::OnCameraUpdateCallback(float fTimeElapsed)
+{
+	XMFLOAT3 xmf3CameraPosition = m_pCamera->GetPosition();
+	/*높이 맵에서 카메라의 현재 위치 (x, z)에 대한 지형의 높이(y 값)를 구한다. 
+	이 값이 카메라의 위치 벡터의 y-값 보 다 크면 카메라가 지형의 아래에 있게 된다. 
+	이렇게 되면 다음 그림의 왼쪽과 같이 지형이 그려지지 않는 경우가 발생 한다(카메라가 지형 안에 있으므로 삼각형의 와인딩 순서가 바뀐다). 
+	이러한 경우가 발생하지 않도록 카메라의 위치 벡 터의 y-값의 최소값은 (지형의 높이 + 5)로 설정한다. 
+	카메라의 위치 벡터의 y-값의 최소값은 지형의 모든 위치에서 카메라가 지형 아래에 위치하지 않도록 설정해야 한다.*/ 
+	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)m_pCameraUpdatedContext;
+	float fHeight = pTerrain->GetHeight(xmf3CameraPosition.x, xmf3CameraPosition.z) + 5.0f;
+	if (xmf3CameraPosition.y <= fHeight)
+	{
+		xmf3CameraPosition.y = fHeight; m_pCamera->SetPosition(xmf3CameraPosition);
+		if (m_pCamera->GetMode() == THIRD_PERSON_CAMERA)
+		{ //3인칭 카메라의 경우 카메라 위치(y-좌표)가 변경되었으므로 카메라가 플레이어를 바라보도록 한다.
+			CThirdPersonCamera *p3rdPersonCamera = (CThirdPersonCamera *)m_pCamera; 
+			p3rdPersonCamera->SetLookAt(GetPosition()); 
+		} 
+	} 
 }
 
 CCamera *CAirplanePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)

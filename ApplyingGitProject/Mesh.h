@@ -9,6 +9,7 @@ public:
 	XMFLOAT4						m_xmf4Diffuse;
 	XMFLOAT2						m_xmf2TexCoord0;
 	XMFLOAT2						m_xmf2TexCoord1;
+
 public:
 	CDiffused2TexturedVertex()
 	{ 
@@ -16,6 +17,7 @@ public:
 		m_xmf4Diffuse = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 		m_xmf2TexCoord0 = m_xmf2TexCoord1 = XMFLOAT2(0.0f, 0.0f); 
 	}
+
 	CDiffused2TexturedVertex(float x, float y, float z, XMFLOAT4 xmf4Diffuse, XMFLOAT2 xmf2TexCoord0, XMFLOAT2 xmf2TexCoord1)
 	{ 
 		m_xmf3Position = XMFLOAT3(x, y, z); 
@@ -23,6 +25,7 @@ public:
 		m_xmf2TexCoord0 = xmf2TexCoord0;
 		m_xmf2TexCoord1 = xmf2TexCoord1;
 	}
+
 	CDiffused2TexturedVertex
 	(XMFLOAT3 xmf3Position, XMFLOAT4 xmf4Diffuse = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), 
 		XMFLOAT2 xmf2TexCoord0 = XMFLOAT2(0.0f, 0.0f), XMFLOAT2 xmf2TexCoord1 = XMFLOAT2(0.0f, 0.0f))
@@ -80,11 +83,10 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-#define VERTEXT_POSITION			0x01
-#define VERTEXT_COLOR				0x02
-#define VERTEXT_NORMAL				0x04
-#define VERTEXT_TEXCOORD            0x08 
-//[질문] 이거 이진수이여야 하나요 ? 
+#define VERTEXT_POSITION	0x01
+#define VERTEXT_COLOR		0x02
+#define VERTEXT_NORMAL		0x04
+#define VERTEXT_TEXCOORD  0x08 
 
 
 class CMeshLoadInfo
@@ -101,11 +103,11 @@ public:
 	XMFLOAT3						m_xmf3AABBCenter = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	XMFLOAT3						m_xmf3AABBExtents = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-	int								m_nVertices = 0;
-	XMFLOAT3						*m_pxmf3Positions = NULL;
-	XMFLOAT4						*m_pxmf4Colors = NULL;
-	XMFLOAT3						*m_pxmf3Normals = NULL;
-	XMFLOAT2                        *m_pxmf2Textures = NULL; 
+	int			m_nVertices = 0;
+	XMFLOAT3	*m_pxmf3Positions = NULL;
+	XMFLOAT4	*m_pxmf4Colors = NULL;
+	XMFLOAT3	*m_pxmf3Normals = NULL;
+	XMFLOAT2   *m_pxmf2Textures = NULL;  //텍스처UV주가
 
 	int								m_nIndices = 0;
 	UINT							*m_pnIndices = NULL;
@@ -236,10 +238,10 @@ public:
 class CTexturedVertex 
 {
 public:
-	//선언하는 순서도 아주 중요하다 !! 
-	//선언하는 순서와 셰이더의 변수와 순서가 맞지 않으면 제대로 렌더링이 안된다.
 	XMFLOAT3						m_xmf3Position;
 	XMFLOAT2						m_xmf2TexCoord;
+	//선언하는 순서도 아주 중요하다 !! 
+	//선언하는 순서와 셰이더의 변수와 순서가 맞지 않으면 제대로 렌더링이 안된다.
 
 public:
 	CTexturedVertex() { m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); }

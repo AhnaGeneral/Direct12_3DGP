@@ -165,3 +165,38 @@ float4 PSBillboard(VS_BILLBOARD_OUTPUT input) : SV_TARGET
 	clip(cColor.a - 0.5f);
 	return(cColor);
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Texture2D gtxStartViewTexture: register(t5);
+
+struct VS_STARTVIEW_INPUT
+{
+	float3 position : POSITION;
+	float2 uv : TEXCOORD;
+};
+
+struct VS_STARTVIEW_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD;
+};
+
+VS_STARTVIEW_OUTPUT VSStartboard(VS_STARTVIEW_INPUT input)
+{
+	VS_STARTVIEW_OUTPUT output;
+
+	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.uv = input.uv;
+
+	return(output);
+}
+
+float4 PSStartboard(VS_STARTVIEW_OUTPUT output) : SV_TARGET
+{
+	float4 cColor = gtxStartViewTexture.Sample(gSamplerState, output.uv);
+	//float4 cColor = (1.0f, 1.0f, 0.0f, 1.0f);
+	//clip(cColor.a - 0.5f);
+	return(cColor);
+}
+
+
+

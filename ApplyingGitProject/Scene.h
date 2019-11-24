@@ -67,6 +67,8 @@ public:
 	CHeightMapTerrain * m_pTerrain = NULL;
 	CSeaWater* pWaterMesh = NULL;
 	CBillboard* pBillboard = NULL;
+	CStartView* StartView = NULL;
+
 public:
 	ID3D12RootSignature			*m_pd3dGraphicsRootSignature = NULL;
 
