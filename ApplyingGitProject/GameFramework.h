@@ -80,7 +80,9 @@ private:
 
 	CGameTimer					m_GameTimer;
 
-	CScene						*m_pScene = NULL;
+	CScene						*m_pScene;
+	int							m_nScene = 0;
+
 	CPlayer						*m_pPlayer = NULL;
 	CCamera						*m_pCamera = NULL;
 

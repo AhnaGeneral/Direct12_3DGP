@@ -84,17 +84,29 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	int yObjects = 1;
 	int zObjects = 8;
 	m_nObjects = (xObjects * yObjects * zObjects);
-
-	CBillboardRectMesh* StartViewMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, 250.0f, 140.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	//StartView = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 70.0f, 140.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	                                                                                                                    
+	CBillboardRectMesh* StartViewMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f, 0.5f);
 	StartView = new CStartView(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature); 
 	StartView->SetMesh(StartViewMesh);
-	StartView->SetPosition(XMFLOAT3(1200.0f,m_pTerrain->GetHeight(1200.0f, 1200.0f) + 50.f, 1200.0f));
 
 
 	m_ppBillboardObj = new CGameObject*[m_nObjects];
 	CBillboardRectMesh* pBillboardMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, 50.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	//SetMesh(pBillboardMesh);
+
+
+	CTexture* pFreeTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
+	pFreeTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/flower_white.dds", 0);
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
+	CBillboardShader *pBillboardShader = new CBillboardShader();
+	pBillboardShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pBillboardShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	pBillboardShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
+	//SetShader(pBillboardShader);
+	//pBillboardShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, m_pd3dcbGameObjects, ncbElementBytes);
+	pBillboardShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pFreeTexture, 6, false);
+
+	//m_ppMaterials[0]->SetTexture(pFreeTexture);
 
 	for (int i = 0, x = 0; x < xObjects; x++)
 	{
@@ -102,6 +114,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 		{
             pBillboard = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 50.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	        pBillboard->SetMesh(pBillboardMesh); 
+			pBillboard->SetShader(pBillboardShader);
+			pBillboard->m_ppMaterials[0]->SetTexture(pFreeTexture);
 			float xPosition = x * fxPitch;
 			float zPosition = z * fzPitch;
 			float fHeight = m_pTerrain->GetHeight(xPosition, zPosition);
@@ -418,30 +432,35 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
-
-	if(StartView)
-		StartView->Render(pd3dCommandList, pCamera);
-	if (m_pTerrain) 
-		m_pTerrain->Render(pd3dCommandList, pCamera);
-	if (pWaterMesh)
-		pWaterMesh->Render(pd3dCommandList, pCamera);
-
-	for (int i = 0; i < m_nObjects; i++)
+	if (!PlayOn)
 	{
-		if (m_ppBillboardObj[i])
-		{
-			//m_ppBillboardObj[i]->UpdateTransform(NULL);
-			m_ppBillboardObj[i]->Render(pd3dCommandList, pCamera);
-			m_ppBillboardObj[i]->Animates(m_fElapsedTime, pCamera);
-		}
+		if (StartView)
+			StartView->Render(pd3dCommandList, pCamera);
 	}
-	for (int i = 0; i < m_nGameObjects; i++)
+	if (PlayOn)
 	{
-		if (m_ppGameObjects[i])
+		if (m_pTerrain)
+			m_pTerrain->Render(pd3dCommandList, pCamera);
+		if (pWaterMesh)
+			pWaterMesh->Render(pd3dCommandList, pCamera);
+
+		for (int i = 0; i < m_nObjects; i++)
 		{
-			m_ppGameObjects[i]->Animate(m_fElapsedTime, NULL);
-			m_ppGameObjects[i]->UpdateTransform(NULL);
-			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
+			if (m_ppBillboardObj[i])
+			{
+				//m_ppBillboardObj[i]->UpdateTransform(NULL);
+				m_ppBillboardObj[i]->Render(pd3dCommandList, pCamera);
+				m_ppBillboardObj[i]->Animates(m_fElapsedTime, pCamera);
+			}
+		}
+		for (int i = 0; i < m_nGameObjects; i++)
+		{
+			if (m_ppGameObjects[i])
+			{
+				m_ppGameObjects[i]->Animate(m_fElapsedTime, NULL);
+				m_ppGameObjects[i]->UpdateTransform(NULL);
+				m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
+			}
 		}
 	}
 }

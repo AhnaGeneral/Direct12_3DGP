@@ -184,7 +184,7 @@ VS_STARTVIEW_OUTPUT VSStartboard(VS_STARTVIEW_INPUT input)
 {
 	VS_STARTVIEW_OUTPUT output;
 
-	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.position = float4(input.position, 1.0f);
 	output.uv = input.uv;
 
 	return(output);

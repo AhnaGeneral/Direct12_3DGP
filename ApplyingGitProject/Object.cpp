@@ -917,26 +917,9 @@ CBillboard::CBillboard
 (ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ID3D12RootSignature * pd3dGraphicsRootSignature,
 	float fWidth, float fHeight, float fDepth, float fPosX, float fPosY, float fPosZ)
 {
-	CBillboardRectMesh* pBillboardMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, fWidth, fHeight, fDepth, fPosX, fPosY, fPosZ);
-	SetMesh(pBillboardMesh);
+	//CBillboardRectMesh* pBillboardMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, fWidth, fHeight, fDepth, fPosX, fPosY, fPosZ);
+	//SetMesh(pBillboardMesh);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-	CTexture* pFreeTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-
-	pFreeTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/flower_white.dds", 0);
-
-	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
-
-	CBillboardShader *pBillboardShader = new CBillboardShader();
-
-	pBillboardShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
-	pBillboardShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	pBillboardShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
-	pBillboardShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, m_pd3dcbGameObjects, ncbElementBytes);
-	pBillboardShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pFreeTexture, 6, false);
-	SetShader(pBillboardShader);
-
-	m_ppMaterials[0]->SetTexture(pFreeTexture);
 	SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize));
 	//SetCbvGPUDescriptorHandle(pWaterShader->GetGPUCbvDescriptorStartHandle());
 }

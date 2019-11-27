@@ -325,6 +325,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					ChangeSwapChainState();
 					break;
 				case VK_F5:
+					m_pScene->PlayOn = true;
 					break;
 				default:
 					break;
