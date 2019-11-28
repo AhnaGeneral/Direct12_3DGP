@@ -79,6 +79,8 @@ public:
 	UINT GetType() { return(m_nType); }
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList) { }
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, int nSubSet) { }
+	//virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, int nSubSet, UINT nInstances = 1) {}
+
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,12 +262,23 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
 };
 
+
 class CBillboardRectMesh : public CMesh
 {
 public:
 	CBillboardRectMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList,
 		float fWidth, float fHeight, float fDepth, float fxPosition, float fyPosition, float fzPosition);
 	virtual ~CBillboardRectMesh();
+	virtual void ReleaseUploadBuffers();
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
+};
+
+class CStartScreenRectMesh : public CMesh
+{
+public:
+	CStartScreenRectMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList,
+		float fWidth, float fHeight, float fDepth, float fxPosition, float fyPosition, float fzPosition);
+	virtual ~CStartScreenRectMesh();
 	virtual void ReleaseUploadBuffers();
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
 };

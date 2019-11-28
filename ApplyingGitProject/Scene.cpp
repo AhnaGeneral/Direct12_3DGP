@@ -85,7 +85,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	int zObjects = 8;
 	m_nObjects = (xObjects * yObjects * zObjects);
 	                                                                                                                    
-	CBillboardRectMesh* StartViewMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f, 0.5f);
+	CStartScreenRectMesh* StartViewMesh = new CStartScreenRectMesh(pd3dDevice, pd3dCommandList, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f, 0.5f);
 	StartView = new CStartView(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature); 
 	StartView->SetMesh(StartViewMesh);
 
@@ -384,19 +384,19 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 {
 	switch (nMessageID)
 	{
-	case WM_KEYDOWN:
-		switch (wParam)
-		{
-		case 'W': m_ppGameObjects[0]->MoveForward(+1.0f); break;
-		case 'S': m_ppGameObjects[0]->MoveForward(-1.0f); break;
-		case 'A': m_ppGameObjects[0]->MoveStrafe(-1.0f); break;
-		case 'D': m_ppGameObjects[0]->MoveStrafe(+1.0f); break;
-		case 'Q': m_ppGameObjects[0]->MoveUp(+1.0f); break;
-		case 'R': m_ppGameObjects[0]->MoveUp(-1.0f); break;
-		default:
-			break;
-		}
-		break;
+	//case WM_KEYDOWN:
+	//	switch (wParam)
+	//	{
+	//	case 'W': m_ppGameObjects[0]->MoveForward(+1.0f); break;
+	//	case 'S': m_ppGameObjects[0]->MoveForward(-1.0f); break;
+	//	case 'A': m_ppGameObjects[0]->MoveStrafe(-1.0f); break;
+	//	case 'D': m_ppGameObjects[0]->MoveStrafe(+1.0f); break;
+	//	case 'Q': m_ppGameObjects[0]->MoveUp(+1.0f); break;
+	//	case 'R': m_ppGameObjects[0]->MoveUp(-1.0f); break;
+	//	default:
+	//		break;
+	//	}
+	//	break;
 	default:
 		break;
 	}
