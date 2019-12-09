@@ -140,53 +140,82 @@ Texture2D gtxtBillboardTextures: register(t4);
 
 struct VS_BILLBOARD_INPUT
 {
-	float3 position : POSITION;
-	float2 uv : TEXCOORD;
+	//float3 position : POSITION;
+	//float2 uv : TEXCOORD;
+	//float2 size : SIZE;
 	float3 instancePosition : INSTANCEPOSITION;
 	float4 billboardInfo : BILLBOARDINFO; //(cx, cy, type, texture)
 };
 
 struct VS_BILLBOARD_OUTPUT
 {
-	float4 position : SV_POSITION;
-	float2 uv : TEXCOORD;
+	float3 centerW : POSITION;
+	float4 billboardInfo : BILLBOARDINFO;
+	float2 sizeW : SIZE;
 	int textureID : TEXTUREID;
 };
+
+struct GS_BILLBOARD_OUTPUT
+{
+	float4 posH :SV_POSITION;
+	float3 posW :POSITION; 
+	float2 UV: TEXCOORD; 
+	uint primID : SV_PrimitiveID;
+};
+
+
+[maxvertexcount(4)]
+void GS(point VS_BILLBOARD_OUTPUT input[1], uint primID:SV_PrimitiveID, inout TriangleStream<GS_BILLBOARD_OUTPUT> outStream)
+{
+	float3 vUP           = float3(0.0f, 1.0f, 0.0f); 
+	float3 vLook         = gvCameraPosition.xyz - input[0].centerW;
+	vLook                = normalize(vLook);
+	float3 vRight        = cross(vUP, vLook);
+					     
+	float fHalfW         = input[0].sizeW.x * 0.5f;
+	float fHalfH         = input[0].sizeW.y * 0.5f;
+
+	float4 pVertices[4]; 
+	pVertices[0]         = float4(input[0].centerW + fHalfW * vRight - fHalfH * vUP, 1.0f);
+	pVertices[1]         = float4(input[0].centerW + fHalfW * vRight + fHalfH * vUP, 1.0f);
+	pVertices[2]         = float4(input[0].centerW - fHalfW * vRight - fHalfH * vUP, 1.0f);
+	pVertices[3]         = float4(input[0].centerW - fHalfW * vRight + fHalfH * vUP, 1.0f);
+
+	float2 pUVs[4] = { float2 (0.0f, 1.0f), float2(0.0f, 0.0f), float2(1.0f, 1.0f), float2(1.0f, 0.0f) }; 
+
+	GS_BILLBOARD_OUTPUT output;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		output.posW       = pVertices[i].xyz;
+		output.posH       = mul(mul(pVertices[i], gmtxView), gmtxProjection);
+		//output.normalW    = vLook; 
+		output.UV         = pUVs[i];
+		output.primID     = primID;
+		outStream.Append(output);
+	}
+}
+
 
 VS_BILLBOARD_OUTPUT VSBillboard(VS_BILLBOARD_INPUT input)
 {
 	VS_BILLBOARD_OUTPUT output;
 
-	if (input.position.x < 0.0f) input.position.x = -(input.billboardInfo.x * 0.5f);
-	else if (input.position.x > 0.0f) input.position.x = (input.billboardInfo.x * 0.5f);
-	if (input.position.y < 0.0f) input.position.y = -(input.billboardInfo.y * 0.5f);
-	else if (input.position.y > 0.0f) input.position.y = (input.billboardInfo.y * 0.5f);
-
-	float3 f3Look = normalize(gvCameraPosition - input.instancePosition);
-	float3 f3Up = float3(0.0f, 1.0f, 0.0f);
-	float3 f3Right = normalize(cross(f3Up, f3Look));
-
-	matrix mtxWorld;
-	mtxWorld[0] = float4(f3Right, 0.0f);
-	mtxWorld[1] = float4(f3Up, 0.0f);
-	mtxWorld[2] = float4(f3Look, 0.0f);
-	mtxWorld[3] = float4(input.instancePosition, 1.0f);
-
-	output.position = mul(mul(mul(float4(input.position, 1.0f), mtxWorld), gmtxView), gmtxProjection);
-
-	output.uv = input.uv;
-	output.textureID = (int)input.billboardInfo.w - 1;
-
+	output.textureID          = (int)input.billboardInfo.w - 1;
+	output.billboardInfo      = input.billboardInfo;
+	output.centerW            = input.instancePosition;
+	output.sizeW              = float2(input.billboardInfo.x, input.billboardInfo.y);
 	return(output);
 }
 
-float4 PSBillboard(VS_BILLBOARD_OUTPUT input) : SV_TARGET
+float4 PSBillboard(GS_BILLBOARD_OUTPUT input) : SV_TARGET
 {
-    float4 cColor = gtxtBillboardTextures.Sample(gWrapSamplerState, input.uv);
+    float4 cColor = gtxtBillboardTextures.Sample(gWrapSamplerState, input.UV);
     //float4 cColor = (1.0f, 1.0f, 0.0f, 1.0f);
 	clip(cColor.a - 0.5f);
 	return(cColor);
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Texture2D gtxStartViewTexture: register(t5);
 

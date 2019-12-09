@@ -230,6 +230,12 @@ public:
 	~CTexturedVertex() { }
 };
 
+typedef struct SGSTexturedVertex
+{
+	CTexturedVertex      m_texturedVertex; 
+	XMFLOAT2             m_xmf2Size;
+}GSVERTEXT;
+
 class CWaterSquare : public CMesh
 {
 public:

@@ -40,6 +40,15 @@ D3D12_SHADER_BYTECODE CShader::CreatePixelShader()
 	return(d3dShaderByteCode);
 }
 
+D3D12_SHADER_BYTECODE CShader::CreateGeometryShader()
+{
+	D3D12_SHADER_BYTECODE d3dShaderByteCode;
+	d3dShaderByteCode.BytecodeLength = 0;
+	d3dShaderByteCode.pShaderBytecode = NULL;
+
+	return(d3dShaderByteCode);
+}
+
 D3D12_SHADER_BYTECODE CShader::CompileShaderFromFile(WCHAR *pszFileName, LPCSTR pszShaderName, LPCSTR pszShaderProfile, ID3DBlob **ppd3dShaderBlob)
 {
 	UINT nCompileFlags = 0;
@@ -187,6 +196,7 @@ void CShader::CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList* 
 	m_d3dPipelineStateDesc.pRootSignature = pd3dGraphicsRootSignature;
 	m_d3dPipelineStateDesc.VS = CreateVertexShader();
 	m_d3dPipelineStateDesc.PS = CreatePixelShader();
+	m_d3dPipelineStateDesc.GS = CreateGeometryShader();
 	m_d3dPipelineStateDesc.RasterizerState = CreateRasterizerState();
 	m_d3dPipelineStateDesc.BlendState = CreateBlendState();
 	m_d3dPipelineStateDesc.DepthStencilState = CreateDepthStencilState();
@@ -523,18 +533,19 @@ CBillboardShader::~CBillboardShader()
 
 void CBillboardShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
-	CTexturedVertex pVertices[6];
-	pVertices[0] = CTexturedVertex(XMFLOAT3(-1.0f, +1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f));
-	pVertices[1] = CTexturedVertex(XMFLOAT3(+1.0f, +1.0f, 1.0f), XMFLOAT2(1.0f, 0.0f));
-	pVertices[2] = CTexturedVertex(XMFLOAT3(+1.0f, -1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f));
-	pVertices[3] = CTexturedVertex(XMFLOAT3(-1.0f, +1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f));
-	pVertices[4] = CTexturedVertex(XMFLOAT3(+1.0f, -1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f));
-	pVertices[5] = CTexturedVertex(XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f));
+	
+	//GSVERTEXT pVertices[6];
+	//pVertices[0] = { CTexturedVertex(XMFLOAT3(-1.0f, +1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f)), XMFLOAT2(50.0f, 100.f) };
+	//pVertices[1] = { CTexturedVertex(XMFLOAT3(+1.0f, +1.0f, 1.0f), XMFLOAT2(1.0f, 0.0f)), XMFLOAT2(50.0f, 100.f) };
+	//pVertices[2] = { CTexturedVertex(XMFLOAT3(+1.0f, -1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f)), XMFLOAT2(50.0f, 100.f) };
+	//pVertices[3] = { CTexturedVertex(XMFLOAT3(-1.0f, +1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f)), XMFLOAT2(50.0f, 100.f) };
+	//pVertices[4] = { CTexturedVertex(XMFLOAT3(+1.0f, -1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f)), XMFLOAT2(50.0f, 100.f) };
+	//pVertices[5] = { CTexturedVertex(XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f)), XMFLOAT2(50.0f, 100.f) };
 
-	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, sizeof(CTexturedVertex) * 6, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
-	m_d3dVertexBufferView.StrideInBytes = sizeof(CTexturedVertex);
-	m_d3dVertexBufferView.SizeInBytes = sizeof(CTexturedVertex) * 6;
+	//m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, sizeof(GSVERTEXT) * 6, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
+	//m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
+	//m_d3dVertexBufferView.StrideInBytes = sizeof(GSVERTEXT);
+	//m_d3dVertexBufferView.SizeInBytes = sizeof(GSVERTEXT) * 6;
 
 	int nFlowerObjects = 0;
 
@@ -585,13 +596,14 @@ void CBillboardShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 
 D3D12_INPUT_LAYOUT_DESC CBillboardShader::CreateInputLayout()
 {
-	UINT nInputElementDescs = 4;
+	UINT nInputElementDescs = 2;
 	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
 
-	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	pd3dInputElementDescs[2] = { "INSTANCEPOSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
-	pd3dInputElementDescs[3] = { "BILLBOARDINFO", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 12, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
+	//pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	//pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	//pd3dInputElementDescs[2] = { "SIZE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[0] = { "INSTANCEPOSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
+	pd3dInputElementDescs[1] = { "BILLBOARDINFO", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
 
 	//입력 조립기 단계에 연결되어 입력 버퍼의 구조를 표현
 	//SemanticName ,SeamticIndex, Format, InputSlot, AlignedByteOffeset, InputSlotClass, InstanceDataStepRate 
@@ -612,6 +624,11 @@ D3D12_SHADER_BYTECODE CBillboardShader::CreateVertexShader()
 D3D12_SHADER_BYTECODE CBillboardShader::CreatePixelShader()
 {
 	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSBillboard", "ps_5_1", &m_pd3dPixelShaderBlob));
+}
+
+D3D12_SHADER_BYTECODE CBillboardShader::CreateGeometryShader()
+{
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "GS", "gs_5_1", &m_pd3dGeometryShaderBlob));
 }
 
 D3D12_RASTERIZER_DESC CBillboardShader::CreateRasterizerState()
@@ -680,10 +697,10 @@ void CBillboardShader::ReleaseObjects()
 {
 	if (m_pBillboardMaterial) m_pBillboardMaterial->Release();
 
-	if (m_pd3dVertexBuffer) m_pd3dVertexBuffer->Release();
+	//if (m_pd3dVertexBuffer) m_pd3dVertexBuffer->Release();
 	if (m_pd3dInstancesBuffer) m_pd3dInstancesBuffer->Release();
 
-	if (m_pd3dVertexUploadBuffer) m_pd3dVertexUploadBuffer->Release();
+	//if (m_pd3dVertexUploadBuffer) m_pd3dVertexUploadBuffer->Release();
 	if (m_pd3dInstanceUploadBuffer) m_pd3dInstanceUploadBuffer->Release();
 }
 
@@ -693,7 +710,7 @@ void CBillboardShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamer
 
 	m_pBillboardMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
 
-	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[] = { m_d3dVertexBufferView, m_d3dInstancingBufferView };
+	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[] = { m_d3dInstancingBufferView };
 	pd3dCommandList->IASetVertexBuffers(0, _countof(pVertexBufferViews), pVertexBufferViews);
 	pd3dCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pd3dCommandList->DrawInstanced(6, m_nInstances, 0, 0);
