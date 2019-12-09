@@ -41,6 +41,8 @@ public:
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL) { }
+	
 	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT4X4 *pxmf4x4World);
 	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, CMaterialColors *pMaterialColors);
 
@@ -130,9 +132,33 @@ public:
 	CBillboardShader();
 	virtual ~CBillboardShader();
 
-	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
-	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
-	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL);
+	virtual D3D12_SHADER_BYTECODE     CreateVertexShader();
+	virtual D3D12_SHADER_BYTECODE     CreatePixelShader();
+
+	virtual D3D12_RASTERIZER_DESC     CreateRasterizerState();
+	virtual D3D12_DEPTH_STENCIL_DESC  CreateDepthStencilState();
+
+
+
+	virtual D3D12_INPUT_LAYOUT_DESC   CreateInputLayout();
+	virtual D3D12_BLEND_DESC          CreateBlendState();
+
+	virtual void                      ReleaseObjects();
+	virtual void                      Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+	CMaterial                        * m_pBillboardMaterial;
+	
+	ID3D12Resource                   * m_pd3dVertexBuffer = NULL;
+	ID3D12Resource                   * m_pd3dVertexUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW		 m_d3dVertexBufferView;
+
+	int								 m_nInstances = 0;
+	ID3D12Resource                   * m_pd3dInstancesBuffer = NULL;
+	ID3D12Resource                   * m_pd3dInstanceUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW		 m_d3dInstancingBufferView;
+	CBillboard                       * pBillboard = NULL;
+
 
 	virtual void CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
 };

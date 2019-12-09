@@ -63,27 +63,29 @@ public:
 
 	void ReleaseUploadBuffers();
 
-	CPlayer *m_pPlayer = NULL;
-	CHeightMapTerrain * m_pTerrain = NULL;
-	CSeaWater* pWaterMesh = NULL;
-	CBillboard* pBillboard = NULL;
-	CStartView* StartView = NULL;
+	CPlayer                  *m_pPlayer = NULL;
+	CHeightMapTerrain        *m_pTerrain = NULL;
+	CSeaWater                *pWaterMesh = NULL;
+	CBillboardShader         *m_pBillboardShader = NULL; 
+	//CBillboard               *pBillboard = NULL;
+	CStartView               *StartView = NULL;
 
 public:
-	ID3D12RootSignature			*m_pd3dGraphicsRootSignature = NULL;
-
-	CGameObject					**m_ppGameObjects = NULL;
-	CGameObject					**m_ppBillboardObj = NULL;
-	int							m_nGameObjects = 0;
-	int m_nObjects = 0;
-	LIGHT						*m_pLights = NULL;
-	int							m_nLights = 0;
-
-	XMFLOAT4					m_xmf4GlobalAmbient;
-
-	ID3D12Resource				*m_pd3dcbLights = NULL;
-	LIGHTS						*m_pcbMappedLights = NULL;
-
-	float						m_fElapsedTime = 0.0f;
-	bool PlayOn = false; 
+	ID3D12RootSignature		 *m_pd3dGraphicsRootSignature = NULL;
+							 
+	CGameObject				 **m_ppGameObjects = NULL;
+	CGameObject				 **m_ppBillboardObj = NULL;
+	int						 m_nGameObjects = 0;
+	int m_nObjects = 0;		 
+	LIGHT					 *m_pLights = NULL;
+	int						 m_nLights = 0;
+							 
+	XMFLOAT4				 m_xmf4GlobalAmbient;
+							 
+	ID3D12Resource			 *m_pd3dcbLights = NULL;
+	LIGHTS					 *m_pcbMappedLights = NULL;
+							 
+	float					 m_fElapsedTime = 0.0f;
+	bool                     PlayOn = false; 
+	int                      m_nInstances = 0; 
 };

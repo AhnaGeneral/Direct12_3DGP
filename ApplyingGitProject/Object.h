@@ -300,11 +300,17 @@ private:
 	float m_xmf3Scale;
 };
 
+
+struct VS_VB_BILLBOARD_INSTANCE
+{
+	XMFLOAT3              m_xmf3Position; 
+	XMFLOAT4              m_xmf4BillboardInfo; 
+};
+
 class CBillboard : public CGameObject
 {
 public:
-	CBillboard(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList,
-		ID3D12RootSignature *pd3dGraphicsRootSignature, float fWidth, float fHeight, float fDepth, float fPosX, float fPosY, float fPosZ);
+	CBillboard(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float fWidth, float fHeight, float fDepth, float fPosX, float fPosY, float fPosZ);
 	virtual ~CBillboard();
 
 	virtual void Animates(float fTimeElapsed, CCamera* pCamera);

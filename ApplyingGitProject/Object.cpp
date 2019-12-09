@@ -914,8 +914,7 @@ CSeaWater::~CSeaWater()
 
 //[CBillboard]===============================================================================
 CBillboard::CBillboard
-(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ID3D12RootSignature * pd3dGraphicsRootSignature,
-	float fWidth, float fHeight, float fDepth, float fPosX, float fPosY, float fPosZ)
+(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, float fWidth, float fHeight, float fDepth, float fPosX, float fPosY, float fPosZ)
 {
 	//CBillboardRectMesh* pBillboardMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, fWidth, fHeight, fDepth, fPosX, fPosY, fPosZ);
 	//SetMesh(pBillboardMesh);

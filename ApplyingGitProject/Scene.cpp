@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "Scene.h"
 
-CScene::CScene() { }
+CScene::CScene(){ }
 CScene::~CScene() { }
 
 void CScene::BuildDefaultLightsAndMaterials()
@@ -72,7 +72,6 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pWaterMesh->SetPosition(XMFLOAT3(1000.f, m_pTerrain->GetHeight(500.f, 500.f)-10.f , 1000.f));
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	float fxPitch = 12.0f * 10.0f;
 	float fyPitch = 12.0f * 10.0f;
 	float fzPitch = 12.0f * 10.0f;
@@ -89,46 +88,9 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	StartView = new CStartView(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature); 
 	StartView->SetMesh(StartViewMesh);
 
-
-	m_ppBillboardObj = new CGameObject*[m_nObjects];
-	CBillboardRectMesh* pBillboardMesh = new CBillboardRectMesh(pd3dDevice, pd3dCommandList, 50.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	//SetMesh(pBillboardMesh);
-
-
-	CTexture* pFreeTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-	pFreeTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/flower_white.dds", 0);
-	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
-	CBillboardShader *pBillboardShader = new CBillboardShader();
-	pBillboardShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pBillboardShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	pBillboardShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, pd3dCommandList, 1, 1);
-	//SetShader(pBillboardShader);
-	//pBillboardShader->CreateConstantBufferViews(pd3dDevice, pd3dCommandList, 1, m_pd3dcbGameObjects, ncbElementBytes);
-	pBillboardShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pFreeTexture, 6, false);
-
-	//m_ppMaterials[0]->SetTexture(pFreeTexture);
-
-	for (int i = 0, x = 0; x < xObjects; x++)
-	{
-		for (int z = 0; z < zObjects; z++)
-		{
-            pBillboard = new CBillboard(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 50.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	        pBillboard->SetMesh(pBillboardMesh); 
-			pBillboard->SetShader(pBillboardShader);
-			pBillboard->m_ppMaterials[0]->SetTexture(pFreeTexture);
-			float xPosition = x * fxPitch;
-			float zPosition = z * fzPitch;
-			float fHeight = m_pTerrain->GetHeight(xPosition, zPosition);
-
-			if ((m_pTerrain->GetHeight(500.f, 500.f) - 10.f) < fHeight)
-				pBillboard->SetPosition(xPosition, fHeight + 50.0f, zPosition);
-
-			//pRotatingObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i));
-			m_ppBillboardObj[i++] = pBillboard;
-
-		}
-	}
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	m_pBillboardShader = new CBillboardShader;
+	m_pBillboardShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature); 
+	m_pBillboardShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
 
 	m_nGameObjects = 7;
 	m_ppGameObjects = new CGameObject*[m_nGameObjects];
@@ -145,9 +107,6 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	CMaterial::m_pIlluminatedShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTextures, 3, false);
 	
-
-	//질문
-	//pApacheModel->SetTexture(pTextures);
 	pApacheModel->m_pChild->SetTexture(pTextures); 
 
 	pApacheObject = new CApacheObject();
@@ -213,11 +172,12 @@ void CScene::ReleaseObjects()
 		delete[] m_ppGameObjects;
 	}
 
-	if (m_ppBillboardObj)
-	{
-		for (int i = 0; i < m_nObjects; i++) if (m_ppBillboardObj[i]) m_ppBillboardObj[i]->Release();
-		delete[] m_ppBillboardObj;
-	}
+	m_pBillboardShader->ReleaseObjects(); 
+	//if (m_ppBillboardObj)
+	//{
+	//	for (int i = 0; i < m_nObjects; i++) if (m_ppBillboardObj[i]) m_ppBillboardObj[i]->Release();
+	//	delete[] m_ppBillboardObj;
+	//}
 	//if (m_pTerrain) delete m_pTerrain;
 
 	ReleaseShaderVariables();
@@ -307,29 +267,46 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dRootParameters[7].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[4];
 	pd3dRootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+	//D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
+
 	//샘플러
-	D3D12_STATIC_SAMPLER_DESC d3dSamplerDesc;
+	D3D12_STATIC_SAMPLER_DESC d3dSamplerDesc[2];
 	::ZeroMemory(&d3dSamplerDesc, sizeof(D3D12_STATIC_SAMPLER_DESC));
-	d3dSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-	d3dSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	d3dSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	d3dSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	d3dSamplerDesc.MipLODBias = 0;
-	d3dSamplerDesc.MaxAnisotropy = 1;
-	d3dSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-	d3dSamplerDesc.MinLOD = 0;
-	d3dSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-	d3dSamplerDesc.ShaderRegister = 0;
-	d3dSamplerDesc.RegisterSpace = 0;
-	d3dSamplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	d3dSamplerDesc[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	d3dSamplerDesc[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	d3dSamplerDesc[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	d3dSamplerDesc[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	d3dSamplerDesc[0].MipLODBias = 0;
+	d3dSamplerDesc[0].MaxAnisotropy = 1;
+	d3dSamplerDesc[0].ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+	d3dSamplerDesc[0].MinLOD = 0;
+	d3dSamplerDesc[0].MaxLOD = D3D12_FLOAT32_MAX;
+	d3dSamplerDesc[0].ShaderRegister = 0;
+	d3dSamplerDesc[0].RegisterSpace = 0;
+	d3dSamplerDesc[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	d3dSamplerDesc[1].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	d3dSamplerDesc[1].AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	d3dSamplerDesc[1].AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	d3dSamplerDesc[1].AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	d3dSamplerDesc[1].MipLODBias = 0;
+	d3dSamplerDesc[1].MaxAnisotropy = 1;
+	d3dSamplerDesc[1].ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+	d3dSamplerDesc[1].MinLOD = 0;
+	d3dSamplerDesc[1].MaxLOD = D3D12_FLOAT32_MAX;
+	d3dSamplerDesc[1].ShaderRegister = 1;
+	d3dSamplerDesc[1].RegisterSpace = 0;
+	d3dSamplerDesc[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+
 
 	D3D12_ROOT_SIGNATURE_FLAGS d3dRootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS | D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS | D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 	D3D12_ROOT_SIGNATURE_DESC d3dRootSignatureDesc;
 	::ZeroMemory(&d3dRootSignatureDesc, sizeof(D3D12_ROOT_SIGNATURE_DESC));
 	d3dRootSignatureDesc.NumParameters = _countof(pd3dRootParameters);
 	d3dRootSignatureDesc.pParameters = pd3dRootParameters;
-	d3dRootSignatureDesc.NumStaticSamplers = 1;//
-	d3dRootSignatureDesc.pStaticSamplers = &d3dSamplerDesc;
+	d3dRootSignatureDesc.NumStaticSamplers = 2;//
+	d3dRootSignatureDesc.pStaticSamplers = d3dSamplerDesc;
 	d3dRootSignatureDesc.Flags = d3dRootSignatureFlags;
 
 	ID3DBlob *pd3dSignatureBlob = NULL;
@@ -370,8 +347,8 @@ void CScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nGameObjects; i++) 
 		m_ppGameObjects[i]->ReleaseUploadBuffers();
 	//if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
-	for (int i = 0; i < m_nObjects; i++)
-		m_ppBillboardObj[i]->ReleaseUploadBuffers();
+	//for (int i = 0; i < m_nObjects; i++)
+	//	m_ppBillboardObj[i]->ReleaseUploadBuffers();
 
 }
 
@@ -444,15 +421,18 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 		if (pWaterMesh)
 			pWaterMesh->Render(pd3dCommandList, pCamera);
 
-		for (int i = 0; i < m_nObjects; i++)
-		{
-			if (m_ppBillboardObj[i])
-			{
-				//m_ppBillboardObj[i]->UpdateTransform(NULL);
-				m_ppBillboardObj[i]->Render(pd3dCommandList, pCamera);
-				m_ppBillboardObj[i]->Animates(m_fElapsedTime, pCamera);
-			}
-		}
+		//for (int i = 0; i < m_nObjects; i++)
+		//{
+		//	if (m_ppBillboardObj[i])
+		//	{
+		//		//m_ppBillboardObj[i]->UpdateTransform(NULL);
+		//		m_ppBillboardObj[i]->Render(pd3dCommandList, pCamera);
+		//		m_ppBillboardObj[i]->Animates(m_fElapsedTime, pCamera);
+		//	}
+		//}
+
+		m_pBillboardShader->Render(pd3dCommandList, pCamera);
+
 		for (int i = 0; i < m_nGameObjects; i++)
 		{
 			if (m_ppGameObjects[i])

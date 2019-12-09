@@ -5,10 +5,10 @@
 class CDiffused2TexturedVertex 
 {
 public: 
-	XMFLOAT3						m_xmf3Position;
-	XMFLOAT4						m_xmf4Diffuse;
-	XMFLOAT2						m_xmf2TexCoord0;
-	XMFLOAT2						m_xmf2TexCoord1;
+	XMFLOAT3				m_xmf3Position;
+	XMFLOAT4				m_xmf4Diffuse;
+	XMFLOAT2				m_xmf2TexCoord0;
+	XMFLOAT2				m_xmf2TexCoord1;
 
 public:
 	CDiffused2TexturedVertex()
@@ -46,7 +46,7 @@ public:
     virtual ~CMesh() { }
 
 private:
-	int	m_nReferences = 0;
+	int	                        m_nReferences = 0;
 
 public:
 	void AddRef() { m_nReferences++; }
@@ -54,26 +54,26 @@ public:
 	virtual void ReleaseUploadBuffers() { }
 protected:
 
-	ID3D12Resource* m_pd3dVertexBuffer = NULL; 
-	ID3D12Resource* m_pd3dVertexUploadBuffer = NULL;
+	ID3D12Resource*             m_pd3dVertexBuffer = NULL; 
+	ID3D12Resource*             m_pd3dVertexUploadBuffer = NULL;
+					            
+	ID3D12Resource*             m_pd3dIndexBuffer = NULL;
+	ID3D12Resource*             m_pd3dIndexUploadBuffer = NULL;
 
-	ID3D12Resource* m_pd3dIndexBuffer = NULL;
-	ID3D12Resource* m_pd3dIndexUploadBuffer = NULL;
-
-	D3D12_VERTEX_BUFFER_VIEW		m_d3dVertexBufferView;
-	D3D12_INDEX_BUFFER_VIEW			m_d3dIndexBufferView;
-
-	D3D12_PRIMITIVE_TOPOLOGY		m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	D3D12_VERTEX_BUFFER_VIEW	m_d3dVertexBufferView;
+	D3D12_INDEX_BUFFER_VIEW		m_d3dIndexBufferView;
+								
+	D3D12_PRIMITIVE_TOPOLOGY	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	
-	UINT	 m_nSlot = 0;
-	UINT	 m_nVertices = 0;
-	UINT	 m_nOffset = 0;
-	UINT	 m_nType = 0;
-	UINT	 m_nStride = 0;
-
-	UINT	 m_nIndices = 0;
-	UINT	 m_nStartIndex = 0;
-	int	 m_nBaseVertex = 0;
+	UINT	                    m_nSlot = 0;
+	UINT	                    m_nVertices = 0;
+	UINT	                    m_nOffset = 0;
+	UINT	                    m_nType = 0;
+	UINT	                    m_nStride = 0;
+			                    
+	UINT	                    m_nIndices = 0;
+	UINT	                    m_nStartIndex = 0;
+	int	                        m_nBaseVertex = 0;
 
 public:
 	UINT GetType() { return(m_nType); }
@@ -98,25 +98,25 @@ public:
 	~CMeshLoadInfo();
 
 public:
-	char							m_pstrMeshName[256] = { 0 };
+	char               m_pstrMeshName[256] = { 0 };
 
-	UINT							m_nType = 0x00;
+	UINT               m_nType = 0x00;
 
-	XMFLOAT3						m_xmf3AABBCenter = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	XMFLOAT3						m_xmf3AABBExtents = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3           m_xmf3AABBCenter = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3           m_xmf3AABBExtents = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-	int			m_nVertices = 0;
-	XMFLOAT3	*m_pxmf3Positions = NULL;
-	XMFLOAT4	*m_pxmf4Colors = NULL;
-	XMFLOAT3	*m_pxmf3Normals = NULL;
-	XMFLOAT2   *m_pxmf2Textures = NULL;  //텍스처UV주가
+	int	               m_nVertices = 0;
+	XMFLOAT3           *m_pxmf3Positions = NULL;
+	XMFLOAT4           *m_pxmf4Colors = NULL;
+	XMFLOAT3           *m_pxmf3Normals = NULL;
+	XMFLOAT2           *m_pxmf2Textures = NULL;  //텍스처UV주가
 
-	int								m_nIndices = 0;
-	UINT							*m_pnIndices = NULL;
-
-	int								m_nSubMeshes = 0;
-	int								*m_pnSubSetIndices = NULL;
-	UINT							**m_ppnSubSetIndices = NULL;
+	int	               m_nIndices = 0;
+	UINT               *m_pnIndices = NULL;
+		 
+	int	               m_nSubMeshes = 0;
+	int	               *m_pnSubSetIndices = NULL;
+	UINT               **m_ppnSubSetIndices = NULL;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,16 +130,16 @@ public:
 	virtual void ReleaseUploadBuffers();
 
 protected:
-	ID3D12Resource					*m_pd3dPositionBuffer = NULL;
-	ID3D12Resource					*m_pd3dPositionUploadBuffer = NULL;
-	D3D12_VERTEX_BUFFER_VIEW		m_d3dPositionBufferView;
+	ID3D12Resource				*m_pd3dPositionBuffer = NULL;
+	ID3D12Resource				*m_pd3dPositionUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW	m_d3dPositionBufferView;
 
-	int								m_nSubMeshes = 0;
-	int								*m_pnSubSetIndices = NULL;
+	int							m_nSubMeshes = 0;
+	int							*m_pnSubSetIndices = NULL;
 
-	ID3D12Resource					**m_ppd3dSubSetIndexBuffers = NULL;
-	ID3D12Resource					**m_ppd3dSubSetIndexUploadBuffers = NULL;
-	D3D12_INDEX_BUFFER_VIEW			*m_pd3dSubSetIndexBufferViews = NULL;
+	ID3D12Resource				**m_ppd3dSubSetIndexBuffers = NULL;
+	ID3D12Resource				**m_ppd3dSubSetIndexUploadBuffers = NULL;
+	D3D12_INDEX_BUFFER_VIEW		*m_pd3dSubSetIndexBufferViews = NULL;
 
 public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, int nSubSet);
@@ -155,13 +155,13 @@ public:
 	virtual void ReleaseUploadBuffers();
 
 protected:
-	ID3D12Resource					*m_pd3dNormalBuffer = NULL;
-	ID3D12Resource					*m_pd3dNormalUploadBuffer = NULL;
-	D3D12_VERTEX_BUFFER_VIEW		m_d3dNormalBufferView;
+	ID3D12Resource				*m_pd3dNormalBuffer = NULL;
+	ID3D12Resource				*m_pd3dNormalUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW	m_d3dNormalBufferView;
 
-	ID3D12Resource					*m_pd3dTextureBuffer = NULL;
-	ID3D12Resource					*m_pd3dTextureUploadBuffer = NULL;
-	D3D12_VERTEX_BUFFER_VIEW		m_d3dTextureBufferView;
+	ID3D12Resource				*m_pd3dTextureBuffer = NULL;
+	ID3D12Resource				*m_pd3dTextureUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW	m_d3dTextureBufferView;
 
 public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, int nSubSet);
@@ -193,14 +193,9 @@ public:
 class CHeightMapGridMesh : public CMesh
 {
 protected:
-	int							m_nWidth;
-	int							m_nLength;
-	XMFLOAT3					m_xmf3Scale;
-
-	//XMFLOAT3  *m_pxmf3Positions = NULL;
-	//XMFLOAT4  *m_pxmf4Colors = NULL;
-	//XMFLOAT2  *m_pxmf2Textures01 = NULL;
-	//XMFLOAT2  *m_pxmf2Textures02 = NULL;
+	int						m_nWidth;
+	int						m_nLength;
+	XMFLOAT3				m_xmf3Scale;
 
 public:
 	CHeightMapGridMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int xStart, int zStart, int nWidth, int nLength, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 1.0f, 0.0f, 0.0f), void *pContext = NULL);
@@ -213,23 +208,6 @@ public:
 	virtual float OnGetHeight(int x, int z, void *pContext);
 	virtual XMFLOAT4 OnGetColor(int x, int z, void *pContext);
 
-protected:
-
-	//ID3D12Resource *m_pd3dPositionlBuffer = NULL;
-	//ID3D12Resource	*m_pd3dTextureBuffer = NULL;
-	//ID3D12Resource	*m_pd3dTexture2Buffer = NULL;
-	//ID3D12Resource	*m_pd3dColorBuffer = NULL;
-
- //   ID3D12Resource *m_pd3dPositionlUploadBuffer = NULL;
-	//ID3D12Resource	*m_pd3dTextureUploadBuffer = NULL;
-	//ID3D12Resource	*m_pd3dTexture2UploadBuffer = NULL;
-	//ID3D12Resource	*m_pd3dColorUploadBuffer = NULL;
-	//
-	//D3D12_VERTEX_BUFFER_VIEW	m_d3dPositionlBufferView;
-	//D3D12_VERTEX_BUFFER_VIEW		m_d3dTextureBufferView;
-	//D3D12_VERTEX_BUFFER_VIEW	m_d3dTexture2BufferView;
-	//D3D12_VERTEX_BUFFER_VIEW	m_d3dColorBufferView;
-
 public:
 	virtual void ReleaseUploadBuffers();
 	//[질문]subset때문에 지형이 안 만들어 졌음... 뭐지? 
@@ -240,8 +218,8 @@ public:
 class CTexturedVertex 
 {
 public:
-	XMFLOAT3						m_xmf3Position;
-	XMFLOAT2						m_xmf2TexCoord;
+	XMFLOAT3				m_xmf3Position;
+	XMFLOAT2				m_xmf2TexCoord;
 	//선언하는 순서도 아주 중요하다 !! 
 	//선언하는 순서와 셰이더의 변수와 순서가 맞지 않으면 제대로 렌더링이 안된다.
 
@@ -281,4 +259,25 @@ public:
 	virtual ~CStartScreenRectMesh();
 	virtual void ReleaseUploadBuffers();
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
+};
+
+class CRawFormatImage
+{
+protected:
+	BYTE* m_pRawImagePixels = NULL;
+
+	int							m_nWidth;
+	int							m_nLength;
+
+public:
+	CRawFormatImage(const LPCTSTR pFileName, int nWidth, int nLength, bool bFlipY = false);
+	~CRawFormatImage(void);
+
+	BYTE GetRawImagePixel(int x, int z) { return(m_pRawImagePixels[x + (z * m_nWidth)]); }
+	void SetRawImagePixel(int x, int z, BYTE nPixel) { m_pRawImagePixels[x + (z * m_nWidth)] = nPixel; }
+
+	BYTE* GetRawImagePixels() { return(m_pRawImagePixels); }
+
+	int GetRawImageWidth() { return(m_nWidth); }
+	int GetRawImageLength() { return(m_nLength); }
 };
