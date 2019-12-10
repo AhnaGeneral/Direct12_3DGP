@@ -304,7 +304,7 @@ private:
 struct VS_VB_BILLBOARD_INSTANCE
 {
 	XMFLOAT3              m_xmf3Position; 
-	XMFLOAT4              m_xmf4BillboardInfo; 
+	XMFLOAT2              m_xmf4BillboardInfo; 
 };
 
 class CBillboard : public CGameObject

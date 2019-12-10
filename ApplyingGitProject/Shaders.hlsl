@@ -143,16 +143,15 @@ struct VS_BILLBOARD_INPUT
 	//float3 position : POSITION;
 	//float2 uv : TEXCOORD;
 	//float2 size : SIZE;
-	float3 instancePosition : INSTANCEPOSITION;
-	float4 billboardInfo : BILLBOARDINFO; //(cx, cy, type, texture)
+	float3 posW : POSITION;
+	float2 sizeW : SIZE; //(cx, cy, type, texture)
 };
 
 struct VS_BILLBOARD_OUTPUT
 {
 	float3 centerW : POSITION;
-	float4 billboardInfo : BILLBOARDINFO;
 	float2 sizeW : SIZE;
-	int textureID : TEXTUREID;
+	//int textureID : TEXTUREID;
 };
 
 struct GS_BILLBOARD_OUTPUT
@@ -160,12 +159,23 @@ struct GS_BILLBOARD_OUTPUT
 	float4 posH :SV_POSITION;
 	float3 posW :POSITION; 
 	float2 UV: TEXCOORD; 
-	uint primID : SV_PrimitiveID;
+	uint primID: SV_PrimitiveID; 
+	//uint primID : SV_PrimitiveID;
 };
 
+VS_BILLBOARD_OUTPUT VSBillboard(VS_BILLBOARD_INPUT input)
+{
+	VS_BILLBOARD_OUTPUT output;
+
+	//output.textureID          = (int)input.billboardInfo.w - 1;
+	output.sizeW              = input.sizeW;
+	output.centerW            = input.posW;
+	//output.sizeW              = float2(input.billboardInfo.x, input.billboardInfo.y);
+	return(output);
+}
 
 [maxvertexcount(4)]
-void GS(point VS_BILLBOARD_OUTPUT input[1], uint primID:SV_PrimitiveID, inout TriangleStream<GS_BILLBOARD_OUTPUT> outStream)
+void GS(point VS_BILLBOARD_OUTPUT input[1], uint primID : SV_PrimitiveID, inout TriangleStream<GS_BILLBOARD_OUTPUT> outStream)
 {
 	float3 vUP           = float3(0.0f, 1.0f, 0.0f); 
 	float3 vLook         = gvCameraPosition.xyz - input[0].centerW;
@@ -197,20 +207,11 @@ void GS(point VS_BILLBOARD_OUTPUT input[1], uint primID:SV_PrimitiveID, inout Tr
 }
 
 
-VS_BILLBOARD_OUTPUT VSBillboard(VS_BILLBOARD_INPUT input)
-{
-	VS_BILLBOARD_OUTPUT output;
-
-	output.textureID          = (int)input.billboardInfo.w - 1;
-	output.billboardInfo      = input.billboardInfo;
-	output.centerW            = input.instancePosition;
-	output.sizeW              = float2(input.billboardInfo.x, input.billboardInfo.y);
-	return(output);
-}
 
 float4 PSBillboard(GS_BILLBOARD_OUTPUT input) : SV_TARGET
 {
-    float4 cColor = gtxtBillboardTextures.Sample(gWrapSamplerState, input.UV);
+	float3 uvw = float3 (input.UV,(input.primID%4));
+    float4 cColor = gtxtBillboardTextures.Sample(gWrapSamplerState, uvw);
     //float4 cColor = (1.0f, 1.0f, 0.0f, 1.0f);
 	clip(cColor.a - 0.5f);
 	return(cColor);

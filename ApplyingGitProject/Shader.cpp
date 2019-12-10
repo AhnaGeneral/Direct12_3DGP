@@ -351,12 +351,9 @@ D3D12_INPUT_LAYOUT_DESC CIlluminatedShader::CreateInputLayout()
 	UINT nInputElementDescs = 3;
 	D3D12_INPUT_ELEMENT_DESC *pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
 
-	pd3dInputElementDescs[0] =
-	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	pd3dInputElementDescs[1] =
-	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	pd3dInputElementDescs[2] = 
-	{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 2, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[0] = {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = {"NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[2] = {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 2, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 
 	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
 	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
@@ -549,7 +546,7 @@ void CBillboardShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 
 	int nFlowerObjects = 0;
 
-	for (int z = 2; z <= 100; z++)
+	for (int z = 2; z <= 100'000; z++)
 	{
 			nFlowerObjects++;
 	}
@@ -578,11 +575,15 @@ void CBillboardShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	{
 		float xPosition = 0 + rand() % 2000;
 		float zPosition = 0 + rand() % 2000;
-
+		//float xPosition = 1000.0f + i*20; 
+		//float zPosition = 1000.0f + i*20;
 		float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-
+		
 		pInstanceInfos[i].m_xmf3Position = XMFLOAT3(xPosition, fHeight, zPosition);
-		pInstanceInfos[i].m_xmf4BillboardInfo = XMFLOAT4(50.0f,100.0f, 1, 1);
+		if(i%2 ==0)
+			pInstanceInfos[i].m_xmf4BillboardInfo = XMFLOAT2(50.0f,50.0f);
+		else
+			pInstanceInfos[i].m_xmf4BillboardInfo = XMFLOAT2(50.0f, 50.0f);
 	}
 		
 	m_pd3dInstancesBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pInstanceInfos, sizeof(VS_VB_BILLBOARD_INSTANCE) * m_nInstances, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dInstanceUploadBuffer);
@@ -602,8 +603,8 @@ D3D12_INPUT_LAYOUT_DESC CBillboardShader::CreateInputLayout()
 	//pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 	//pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 	//pd3dInputElementDescs[2] = { "SIZE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	pd3dInputElementDescs[0] = { "INSTANCEPOSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
-	pd3dInputElementDescs[1] = { "BILLBOARDINFO", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
+	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
+	pd3dInputElementDescs[1] = { "SIZE", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
 
 	//입력 조립기 단계에 연결되어 입력 버퍼의 구조를 표현
 	//SemanticName ,SeamticIndex, Format, InputSlot, AlignedByteOffeset, InputSlotClass, InstanceDataStepRate 
@@ -712,8 +713,8 @@ void CBillboardShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamer
 
 	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[] = { m_d3dInstancingBufferView };
 	pd3dCommandList->IASetVertexBuffers(0, _countof(pVertexBufferViews), pVertexBufferViews);
-	pd3dCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pd3dCommandList->DrawInstanced(6, m_nInstances, 0, 0);
+	pd3dCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+	pd3dCommandList->DrawInstanced(1, m_nInstances, 0, 0);
 
 }
 
@@ -722,7 +723,24 @@ void CBillboardShader::CreateShader(ID3D12Device * pd3dDevice, ID3D12GraphicsCom
 	m_nPipelineStates = 1;
 	m_ppd3dPipelineStates = new ID3D12PipelineState *[m_nPipelineStates];
 
-	CShader::CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	::ZeroMemory(&m_d3dPipelineStateDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+	m_d3dPipelineStateDesc.pRootSignature = pd3dGraphicsRootSignature;
+	m_d3dPipelineStateDesc.VS = CreateVertexShader();
+	m_d3dPipelineStateDesc.PS = CreatePixelShader();
+	m_d3dPipelineStateDesc.GS = CreateGeometryShader();
+	m_d3dPipelineStateDesc.RasterizerState = CreateRasterizerState();
+	m_d3dPipelineStateDesc.BlendState = CreateBlendState();
+	m_d3dPipelineStateDesc.DepthStencilState = CreateDepthStencilState();
+	m_d3dPipelineStateDesc.InputLayout = CreateInputLayout();
+	m_d3dPipelineStateDesc.SampleMask = UINT_MAX;
+	m_d3dPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+	m_d3dPipelineStateDesc.NumRenderTargets = 1;
+	m_d3dPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	m_d3dPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	m_d3dPipelineStateDesc.SampleDesc.Count = 1;
+	m_d3dPipelineStateDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+
+	HRESULT hResult = pd3dDevice->CreateGraphicsPipelineState(&m_d3dPipelineStateDesc, __uuidof(ID3D12PipelineState), (void**)&m_ppd3dPipelineStates[0]);
 
 	if (m_pd3dVertexShaderBlob) m_pd3dVertexShaderBlob->Release();
 	if (m_pd3dPixelShaderBlob) m_pd3dPixelShaderBlob->Release();
