@@ -224,6 +224,11 @@ public:
 
 	void SetPosition(float x, float y, float z);
 	void SetPosition(XMFLOAT3 xmf3Position);
+	void SetLook(float x, float y, float z);
+	void SetLook(XMFLOAT3 xmf3LookVector);
+	void SetRight(XMFLOAT3 xmf3RightVector);
+	void SetRight(float x, float y, float z);
+
 	void SetScale(float x, float y, float z);
 
 	void MoveStrafe(float fDistance = 1.0f);
@@ -257,10 +262,13 @@ public:
 private:
 	CGameObject	*m_pMainRotorFrame = NULL;
 	CGameObject	*m_pTailRotorFrame = NULL;
+	
+	XMFLOAT3 m_RandomPos; 
 
 public:
 	virtual void OnInitialize();
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
+	void SetRandomPosition(XMFLOAT3);
 };
 
 class CHeightMapTerrain : public CGameObject

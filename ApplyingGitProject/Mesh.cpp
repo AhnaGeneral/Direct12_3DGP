@@ -251,14 +251,17 @@ float CHeightMapImage::GetHeight(float fx, float fz, bool bReverseQuad)
 CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList,
 	int xStart, int zStart, int nWidth, int nLength, XMFLOAT3 xmf3Scale, XMFLOAT4 xmf4Color, void *pContext) : CMesh()
 {
-	m_nVertices = nWidth * nLength;
+	//m_nVertices = nWidth * nLength;
 	m_nOffset = 0;
 	m_nSlot = 0;
-	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+	//m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 
 	m_nWidth = nWidth;
 	m_nLength = nLength;
 	m_xmf3Scale = xmf3Scale;
+
+	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_25_CONTROL_POINT_PATCHLIST;
+	m_nVertices = 25;
 
 	CDiffused2TexturedVertex *pVertices = new CDiffused2TexturedVertex[m_nVertices];
 
@@ -271,17 +274,29 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsC
 			// cxHeightMap = 257-1 
 			// scale 8 2 8
 
-	for (int i = 0, z = zStart; z < (zStart + nLength); z++)
+	//for (int i = 0, z = zStart; z < (zStart + nLength); z++)
+	//{
+	//	for (int x = xStart; x < (xStart + nWidth); x++, i++)
+	//	{
+	//		fHeight = OnGetHeight(x, z, pContext);
+	//		pVertices[i].m_xmf3Position = XMFLOAT3((x*m_xmf3Scale.x), fHeight, (z*m_xmf3Scale.z));
+	//		pVertices[i].m_xmf4Diffuse = Vector4::Add(OnGetColor(x, z, pContext), xmf4Color);
+	//		pVertices[i].m_xmf2TexCoord0 = XMFLOAT2(float(x) / float(cxHeightMap - 1), float(czHeightMap - 1 - z) / float(czHeightMap - 1));
+	//		pVertices[i].m_xmf2TexCoord1 = XMFLOAT2(float(x) / float(m_xmf3Scale.x*0.5f), float(z) / float(m_xmf3Scale.z*0.5f));
+	//		if (fHeight < fMinHeight) fMinHeight = fHeight;
+	//		if (fHeight > fMaxHeight) fMaxHeight = fHeight;
+	//	}
+	//}
+
+	for (int i = 0, z = (zStart + nLength - 1); z >= zStart; z -= 2)
 	{
-		for (int x = xStart; x < (xStart + nWidth); x++, i++)
+		for (int x = xStart; x < (xStart + nWidth); x += 2, i++)
 		{
 			fHeight = OnGetHeight(x, z, pContext);
-			pVertices[i].m_xmf3Position = XMFLOAT3((x*m_xmf3Scale.x), fHeight, (z*m_xmf3Scale.z));
+			pVertices[i].m_xmf3Position = XMFLOAT3((x * m_xmf3Scale.x), fHeight, (z * m_xmf3Scale.z));
 			pVertices[i].m_xmf4Diffuse = Vector4::Add(OnGetColor(x, z, pContext), xmf4Color);
-			pVertices[i].m_xmf2TexCoord0 =
-				XMFLOAT2(float(x) / float(cxHeightMap - 1), float(czHeightMap - 1 - z) / float(czHeightMap - 1));
-			pVertices[i].m_xmf2TexCoord1 = 
-				XMFLOAT2(float(x) / float(m_xmf3Scale.x*0.5f), float(z) / float(m_xmf3Scale.z*0.5f));
+			pVertices[i].m_xmf2TexCoord0 = XMFLOAT2(float(x) / float(cxHeightMap - 1), float(czHeightMap - 1 - z) / float(czHeightMap - 1));
+			pVertices[i].m_xmf2TexCoord1 = XMFLOAT2(float(x) / float(m_xmf3Scale.x * 0.5f), float(z) / float(m_xmf3Scale.z * 0.5f));
 			if (fHeight < fMinHeight) fMinHeight = fHeight;
 			if (fHeight > fMaxHeight) fMaxHeight = fHeight;
 		}
@@ -296,39 +311,39 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsC
 
 	delete[] pVertices;
 
-	m_nIndices = ((nWidth * 2)*(nLength - 1)) + ((nLength - 1) - 1);
-	UINT *pnIndices = new UINT[m_nIndices];
+	//m_nIndices = ((nWidth * 2)*(nLength - 1)) + ((nLength - 1) - 1);
+	//UINT *pnIndices = new UINT[m_nIndices];
 
-	for (int j = 0, z = 0; z < nLength - 1; z++)
-	{
-		if ((z % 2) == 0)
-		{
-			for (int x = 0; x < nWidth; x++)
-			{
-				if ((x == 0) && (z > 0)) pnIndices[j++] = (UINT)(x + (z * nWidth));
-				pnIndices[j++] = (UINT)(x + (z * nWidth));
-				pnIndices[j++] = (UINT)((x + (z * nWidth)) + nWidth);
-			}
-		}
-		else
-		{
-			for (int x = nWidth - 1; x >= 0; x--)
-			{
-				if (x == (nWidth - 1)) pnIndices[j++] = (UINT)(x + (z * nWidth));
-				pnIndices[j++] = (UINT)(x + (z * nWidth));
-				pnIndices[j++] = (UINT)((x + (z * nWidth)) + nWidth);
-			}
-		}
-	}
+	//for (int j = 0, z = 0; z < nLength - 1; z++)
+	//{
+	//	if ((z % 2) == 0)
+	//	{
+	//		for (int x = 0; x < nWidth; x++)
+	//		{
+	//			if ((x == 0) && (z > 0)) pnIndices[j++] = (UINT)(x + (z * nWidth));
+	//			pnIndices[j++] = (UINT)(x + (z * nWidth));
+	//			pnIndices[j++] = (UINT)((x + (z * nWidth)) + nWidth);
+	//		}
+	//	}
+	//	else
+	//	{
+	//		for (int x = nWidth - 1; x >= 0; x--)
+	//		{
+	//			if (x == (nWidth - 1)) pnIndices[j++] = (UINT)(x + (z * nWidth));
+	//			pnIndices[j++] = (UINT)(x + (z * nWidth));
+	//			pnIndices[j++] = (UINT)((x + (z * nWidth)) + nWidth);
+	//		}
+	//	}
+	//}
 
-	m_pd3dIndexBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * m_nIndices,
-		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_pd3dIndexUploadBuffer);
+	//m_pd3dIndexBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * m_nIndices,
+	//	D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_pd3dIndexUploadBuffer);
 
-	m_d3dIndexBufferView.BufferLocation = m_pd3dIndexBuffer->GetGPUVirtualAddress();
-	m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
-	m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
+	//m_d3dIndexBufferView.BufferLocation = m_pd3dIndexBuffer->GetGPUVirtualAddress();
+	//m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	//m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
 
-	delete[] pnIndices;
+	//delete[] pnIndices;
 }
 
 CHeightMapGridMesh::~CHeightMapGridMesh()
@@ -381,15 +396,14 @@ void CHeightMapGridMesh::Render(ID3D12GraphicsCommandList * pd3dCommandList, int
 	pd3dCommandList->IASetPrimitiveTopology(m_d3dPrimitiveTopology);
 	pd3dCommandList->IASetVertexBuffers(m_nSlot, 1, &m_d3dVertexBufferView);
 
-	if (m_pd3dIndexBuffer)
-	{
-		pd3dCommandList->IASetIndexBuffer(&m_d3dIndexBufferView);
-		pd3dCommandList->DrawIndexedInstanced(m_nIndices, 1, 0, 0, 0);
-	}
-	else
-	{
-		pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
-	}
+	//if (m_pd3dIndexBuffer)
+	//{
+	//	pd3dCommandList->IASetIndexBuffer(&m_d3dIndexBufferView);
+	//	pd3dCommandList->DrawIndexedInstanced(m_nIndices, 1, 0, 0, 0);
+	//}
+	
+	pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
+	
 }
 
 CWaterSquare::CWaterSquare(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float fWidth, float fHeight, float fDepth) 
@@ -440,15 +454,14 @@ void CWaterSquare::Render(ID3D12GraphicsCommandList * pd3dCommandList, int nSubS
 	pd3dCommandList->IASetPrimitiveTopology(m_d3dPrimitiveTopology);
 	pd3dCommandList->IASetVertexBuffers(m_nSlot, 1, &m_d3dVertexBufferView);
 
-	if (m_pd3dIndexBuffer)
-	{
-		pd3dCommandList->IASetIndexBuffer(&m_d3dIndexBufferView);
-		pd3dCommandList->DrawIndexedInstanced(m_nIndices, 1, 0, 0, 0);
-	}
-	else
-	{
+	//if (m_pd3dIndexBuffer)
+	//{
+	//	pd3dCommandList->IASetIndexBuffer(&m_d3dIndexBufferView);
+	//	pd3dCommandList->DrawIndexedInstanced(m_nIndices, 1, 0, 0, 0);
+	//}
+
 		pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
-	}
+	
 
 }
 

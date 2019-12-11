@@ -28,6 +28,8 @@ public:
 	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
 	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
 	virtual D3D12_SHADER_BYTECODE CreateGeometryShader();
+	virtual D3D12_SHADER_BYTECODE CreateDomainShader();
+	virtual D3D12_SHADER_BYTECODE CreateHullShader();
 
 
 	D3D12_SHADER_BYTECODE CompileShaderFromFile(WCHAR *pszFileName, LPCSTR pszShaderName, LPCSTR pszShaderProfile, ID3DBlob **ppd3dShaderBlob);
@@ -63,7 +65,8 @@ protected:
 	ID3DBlob							*m_pd3dVertexShaderBlob = NULL;
 	ID3DBlob							*m_pd3dPixelShaderBlob = NULL;
 	ID3DBlob                            *m_pd3dGeometryShaderBlob = NULL; 
-
+	ID3DBlob                           * m_pd3dDomainShaderBlob = NULL;
+	ID3DBlob                           * m_pd3dHullShaderBlob = NULL;
 	int									m_nPipelineStates = 0;
 	ID3D12PipelineState					**m_ppd3dPipelineStates = NULL;
 
@@ -76,6 +79,9 @@ protected:
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorStartHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dSrvCPUDescriptorStartHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dSrvGPUDescriptorStartHandle;
+
+	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
+
 };
 
 
@@ -107,8 +113,12 @@ public:
 
 
 	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
+	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
+
 	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
 	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+	virtual D3D12_SHADER_BYTECODE CreateDomainShader();
+	virtual D3D12_SHADER_BYTECODE CreateHullShader();
 
 	virtual void CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
 	//virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera, int nPipelineState = 0);

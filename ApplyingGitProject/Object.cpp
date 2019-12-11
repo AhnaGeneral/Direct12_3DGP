@@ -228,6 +228,16 @@ void CGameObject::SetMesh(CMesh *pMesh)
 	if (m_pMesh) m_pMesh->AddRef();
 }
 
+void CGameObject::SetMesh(int nIndex, CMesh* pMesh)
+{
+	if (m_ppMeshes)
+	{
+		if (m_ppMeshes[nIndex]) m_ppMeshes[nIndex]->Release();
+		m_ppMeshes[nIndex] = pMesh;
+		if (pMesh) pMesh->AddRef();
+	}
+}
+
 void CGameObject::SetShader(CShader *pShader)
 {
 	m_nMaterials = 1;
@@ -252,6 +262,7 @@ void CGameObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 {
 	if (m_pSibling) m_pSibling->Animate(fTimeElapsed, pxmf4x4Parent);
 	if (m_pChild) m_pChild->Animate(fTimeElapsed, &m_xmf4x4World);
+	//SetPosition(0.0f, 0.0f, 0.0f);
 }
 
 CGameObject *CGameObject::FindFrame(char *pstrFrameName)
@@ -283,8 +294,14 @@ void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pC
 			}
 
 			if (m_pMesh) m_pMesh->Render(pd3dCommandList, i);
+		    if (m_ppMeshes)
+		    {
+		    	for (int i = 0; i < m_nMeshes; i++)
+		    	{
+		    		if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList,i);
+		    	}
+		    }
 		}
-
 	}
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
@@ -346,6 +363,34 @@ void CGameObject::SetPosition(float x, float y, float z)
 void CGameObject::SetPosition(XMFLOAT3 xmf3Position)
 {
 	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
+}
+
+void CGameObject::SetLook(float x, float y, float z)
+{
+	m_xmf4x4Transform._31 = x;
+	m_xmf4x4Transform._32 = y;
+	m_xmf4x4Transform._33 = z;
+
+	UpdateTransform(NULL);
+}
+
+void CGameObject::SetLook(XMFLOAT3 xmf3LookVector)
+{
+	SetLook(xmf3LookVector.x, xmf3LookVector.y, xmf3LookVector.z);
+}
+
+void CGameObject::SetRight(float x, float y, float z)
+{
+	m_xmf4x4Transform._11 = x;
+	m_xmf4x4Transform._12 = y;
+	m_xmf4x4Transform._13 = z;
+
+	UpdateTransform(NULL);
+}
+
+void CGameObject::SetRight(XMFLOAT3 xmf3RightVector)
+{
+	SetRight(xmf3RightVector.x, xmf3RightVector.y, xmf3RightVector.z);
 }
 
 void CGameObject::SetScale(float x, float y, float z)
@@ -832,6 +877,31 @@ void CApacheObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 		XMMATRIX xmmtxRotate = XMMatrixRotationZ(XMConvertToRadians(30.0f) * fTimeElapsed);
 		m_pTailRotorFrame->m_xmf4x4Transform = Matrix4x4::Multiply(xmmtxRotate, m_pTailRotorFrame->m_xmf4x4Transform);
 	}
+
+	// 적 헬리 콥터를 움직이게 하자 
+	/*float positionX 
+	SetPosition(0.0f, 0.0f, 0.0f);*/
+    XMFLOAT3 ReadyPos = GetPosition(); 
+	
+
+	float PosX = rand() % 500 + ReadyPos.x ; 
+	float PosY = rand() % 100 + ReadyPos.y ;
+	float PosZ = rand() % 500 + ReadyPos.z ;
+
+	SetRandomPosition(XMFLOAT3(PosX, PosY, PosZ));
+
+	XMFLOAT3 lookvector = Vector3::Normalize(Vector3::Subtract(m_RandomPos, ReadyPos));
+	SetLook(lookvector);
+	SetRight(Vector3::CrossProduct(lookvector, XMFLOAT3(0.0f, 1.0f, 0.0f)));
+
+	MoveForward(0.1f);
+	
+	
+}
+
+void CApacheObject::SetRandomPosition(XMFLOAT3 randomposvalue)
+{
+	m_RandomPos = randomposvalue; 
 }
 
 CHeightMapTerrain::CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, 
@@ -846,8 +916,26 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 
 	m_pHeightMapImage = new CHeightMapImage(pFileName, nWidth, nLength, xmf3Scale);
 
-	CHeightMapGridMesh* pMesh = new CHeightMapGridMesh(pd3dDevice, pd3dCommandList, 0, 0, nWidth, nLength, xmf3Scale, xmf4Color, m_pHeightMapImage);
-	SetMesh(pMesh);
+	long cxBlocks = (m_nWidth - 1) / (nBlockWidth - 1);
+	long czBlocks = (m_nLength - 1) / (nBlockLength - 1);
+	m_nMeshes = cxBlocks * czBlocks;
+	m_ppMeshes = new CMesh * [m_nMeshes];
+	for (int i = 0; i < m_nMeshes; i++)	m_ppMeshes[i] = NULL;
+	//CHeightMapGridMesh* pMesh = new CHeightMapGridMesh(pd3dDevice, pd3dCommandList, 0, 0, nWidth, nLength, xmf3Scale, xmf4Color, m_pHeightMapImage);
+	//SetMesh(pMesh);
+	CHeightMapGridMesh* pHeightMapGridMesh = NULL;
+
+	for (int z = 0, zStart = 0; z < czBlocks; z++)
+	{
+		for (int x = 0, xStart = 0; x < cxBlocks; x++)
+		{
+			xStart = x * (nBlockWidth - 1);
+			zStart = z * (nBlockLength - 1);
+			pHeightMapGridMesh = new CHeightMapGridMesh(pd3dDevice, pd3dCommandList, xStart, zStart, nBlockWidth, nBlockLength, xmf3Scale, xmf4Color, m_pHeightMapImage);
+			SetMesh(x + (z * cxBlocks), pHeightMapGridMesh);
+		}
+	}
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CTexture* pTerrainTexture = new CTexture(2, RESOURCE_TEXTURE2D, 0);
