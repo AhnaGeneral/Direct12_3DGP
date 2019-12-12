@@ -802,56 +802,9 @@ CGameObject *CGameObject::LoadGeometryFromFile(ID3D12Device *pd3dDevice, ID3D12G
 	return(pGameObject);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////
-//CRotatingObject::CRotatingObject()
-//{
-//	m_xmf3RotationAxis = XMFLOAT3(0.0f, 1.0f, 0.0f);
-//	m_fRotationSpeed = 15.0f;
-//}
-//
-//CRotatingObject::~CRotatingObject()
-//{
-//}
-//
-//void CRotatingObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
-//{
-//	CGameObject::Rotate(&m_xmf3RotationAxis, m_fRotationSpeed * fTimeElapsed);
-//
-//	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
-//}
-//
-//void CRotatingObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
-//{
-//	CGameObject::Render(pd3dCommandList, pCamera);
-//}
-//
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-////
-//CRevolvingObject::CRevolvingObject()
-//{
-//	m_xmf3RevolutionAxis = XMFLOAT3(1.0f, 0.0f, 0.0f);
-//	m_fRevolution= 0.0f;
-//}
-//
-//CRevolvingObject::~CRevolvingObject()
-//{
-//}
-//
-//void CRevolvingObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
-//{
-//	XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&m_xmf3RevolutionAxis), XMConvertToRadians(m_fRevolutio* fTimeElapsed));
-//	m_xmf4x4Transform = Matrix4x4::Multiply(m_xmf4x4Transform, mtxRotate);
-//
-//	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
-//}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//
 CApacheObject::CApacheObject()
 {
 	SetCbvGPUDescriptorHandle(CMaterial::m_pIlluminatedShader->GetGPUCbvDescriptorStartHandle());
-
 }
 
 CApacheObject::~CApacheObject()
@@ -877,31 +830,57 @@ void CApacheObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 		XMMATRIX xmmtxRotate = XMMatrixRotationZ(XMConvertToRadians(30.0f) * fTimeElapsed);
 		m_pTailRotorFrame->m_xmf4x4Transform = Matrix4x4::Multiply(xmmtxRotate, m_pTailRotorFrame->m_xmf4x4Transform);
 	}
-
-	// 적 헬리 콥터를 움직이게 하자 
-	/*float positionX 
-	SetPosition(0.0f, 0.0f, 0.0f);*/
-    XMFLOAT3 ReadyPos = GetPosition(); 
 	
+	if (Vector3::Distance(GetPosition(), m_RandomPos)<=10)
+	{
+		MoveApachObject();
+	}
 
-	float PosX = rand() % 500 + ReadyPos.x ; 
-	float PosY = rand() % 100 + ReadyPos.y ;
-	float PosZ = rand() % 500 + ReadyPos.z ;
+	//float PosX = rand() % 500 + ReadyPos.x ; 
+	//float PosY = rand() % 100 + ReadyPos.y ;
+	//float PosZ = rand() % 500 + ReadyPos.z ;
 
-	SetRandomPosition(XMFLOAT3(PosX, PosY, PosZ));
+	//SetRandomPosition(XMFLOAT3(PosX, PosY, PosZ));
 
-	XMFLOAT3 lookvector = Vector3::Normalize(Vector3::Subtract(m_RandomPos, ReadyPos));
-	SetLook(lookvector);
-	SetRight(Vector3::CrossProduct(lookvector, XMFLOAT3(0.0f, 1.0f, 0.0f)));
+	//XMFLOAT3 lookvector = Vector3::Normalize(Vector3::Subtract(m_RandomPos, GetPosition() ));
+	//SetLook(lookvector);
+	//SetRight(Vector3::CrossProduct(lookvector, XMFLOAT3(0.0f, 1.0f, 0.0f)));
 
-	MoveForward(0.1f);
-	
-	
+	MoveForward(1.0f);
 }
 
 void CApacheObject::SetRandomPosition(XMFLOAT3 randomposvalue)
 {
 	m_RandomPos = randomposvalue; 
+}
+
+void CApacheObject::MoveApachObject()
+{
+
+	XMFLOAT3 randompos;
+	while (true)
+	{
+		randompos.x = GetPosition().x + (rand() % 400) - 200;
+		randompos.y = GetPosition().y + rand() % 20 - 10;
+		randompos.z = GetPosition().z + (rand() % 400) - 200;
+
+		if (Vector3::Distance(randompos, GetPosition()) <= 50)
+			continue;
+		else
+			break; 
+	}
+	
+	SetRandomPosition(randompos);
+
+	XMFLOAT3 lookvector = Vector3::Normalize(Vector3::Subtract(m_RandomPos, GetPosition()));
+	SetLook(lookvector);
+	SetRight(Vector3::CrossProduct(lookvector, XMFLOAT3(0.0f, 1.0f, 0.0f)));
+
+}
+
+XMFLOAT3 CApacheObject::GetRandomPos()
+{
+	return m_RandomPos; 
 }
 
 CHeightMapTerrain::CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, 

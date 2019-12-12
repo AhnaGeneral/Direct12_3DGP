@@ -8,7 +8,6 @@
 #define WIN32_LEAN_AND_MEAN             // 거의 사용되지 않는 내용은 Windows 헤더에서 제외합니다.
 // Windows 헤더 파일:
 #include <windows.h>
-
 // C의 런타임 헤더 파일입니다.
 #include <stdlib.h>
 #include <malloc.h>
@@ -44,10 +43,10 @@ using namespace DirectX::PackedVector;
 
 using Microsoft::WRL::ComPtr;
 
-//#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
 #define FRAME_BUFFER_WIDTH		1280
 #define FRAME_BUFFER_HEIGHT		960
+#define _WITH_SWAPCHAIN_FULLSCREEN_STATE // 전체화면 모드
 
 //#define _WITH_CB_GAMEOBJECT_32BIT_CONSTANTS
 //#define _WITH_CB_GAMEOBJECT_ROOT_DESCRIPTOR
@@ -113,6 +112,13 @@ namespace Vector3
 		XMFLOAT3 xmf3Result;
 		XMStoreFloat3(&xmf3Result, XMLoadFloat3(&xmf3Vector1) - XMLoadFloat3(&xmf3Vector2));
 		return(xmf3Result);
+	}
+
+	inline float Distance(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
+	{
+		XMFLOAT3 xmf3Result;
+		XMStoreFloat3(&xmf3Result, XMVector3Length(XMLoadFloat3(&xmf3Vector1) - XMLoadFloat3(&xmf3Vector2)));
+		return(xmf3Result.x);
 	}
 
 	inline float DotProduct(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)

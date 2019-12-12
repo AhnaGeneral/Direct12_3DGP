@@ -263,12 +263,15 @@ private:
 	CGameObject	*m_pMainRotorFrame = NULL;
 	CGameObject	*m_pTailRotorFrame = NULL;
 	
-	XMFLOAT3 m_RandomPos; 
+	XMFLOAT3 m_RandomPos;
 
 public:
 	virtual void OnInitialize();
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
 	void SetRandomPosition(XMFLOAT3);
+	void MoveApachObject();
+	XMFLOAT3 GetRandomPos(); 
+
 };
 
 class CHeightMapTerrain : public CGameObject

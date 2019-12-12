@@ -111,7 +111,7 @@ void CGameFramework::CreateSwapChain()
 
 	hResult = m_pdxgiFactory->MakeWindowAssociation(m_hWnd, DXGI_MWA_NO_ALT_ENTER);
 
-#ifndef _WITH_SWAPCHAIN_FULLSCREEN_STATE
+#ifdef _WITH_SWAPCHAIN_FULLSCREEN_STATE
 	CreateRenderTargetViews();
 #endif
 }

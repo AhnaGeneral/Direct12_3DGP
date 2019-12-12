@@ -192,8 +192,8 @@ HS_TERRAIN_TESSELLATION_CONSTANT VSTerrainTessellationConstant(InputPatch<VS_TER
 	output.fTessEdges[1] = 3.0f;
 	output.fTessEdges[2] = 3.0f;
 	output.fTessEdges[3] = 3.0f;
-	output.fTessInsides[0] = 1.0f;
-	output.fTessInsides[1] = 1.0f;
+	output.fTessInsides[0] = 3.0f;
+	output.fTessInsides[1] = 3.0f;
 
 	return(output);
 }

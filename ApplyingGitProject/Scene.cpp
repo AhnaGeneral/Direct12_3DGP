@@ -64,12 +64,12 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	BuildDefaultLightsAndMaterials();
 
-	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
+	XMFLOAT3 xmf3Scale(12.0f, 5.0f, 12.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.5f, 0.05f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 9, 9, xmf3Scale, xmf4Color);
 
-	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 500.0f, 0.05f, 500.0f);
-	pWaterMesh->SetPosition(XMFLOAT3(1000.f, m_pTerrain->GetHeight(500.f, 500.f)-10.f , 1000.f));
+	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 750.0f, 0.05f, 750.0f);
+	pWaterMesh->SetPosition(XMFLOAT3(1500.0f, m_pTerrain->GetHeight(800.0f, 800.0f)-20.f , 1500.0f));
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	float fxPitch = 12.0f * 10.0f;
@@ -107,56 +107,63 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	CMaterial::m_pIlluminatedShader->CreateShaderResourceViews(pd3dDevice, pd3dCommandList, pTextures, 3, false);
 	
+	XMFLOAT3 getposition; 
 	pApacheModel->m_pChild->SetTexture(pTextures); 
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(1700.0f, m_pTerrain->GetHeight(1700.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetPosition(XMFLOAT3(1000.0f, m_pTerrain->GetHeight(1000.0f, 400.f) + 100.f, 400.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	pApacheObject->MoveApachObject();
 	m_ppGameObjects[0] = pApacheObject;
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(1800.0f, m_pTerrain->GetHeight(1800.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetPosition(XMFLOAT3(800.0f, m_pTerrain->GetHeight(800.0f, 1400.f) + 100.f, 1400.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	pApacheObject->MoveApachObject();
 	m_ppGameObjects[1] = pApacheObject;
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	
-	pApacheObject->SetPosition(XMFLOAT3(1900.0f, m_pTerrain->GetHeight(1900.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetPosition(XMFLOAT3(400.0f, m_pTerrain->GetHeight(400.0f, 500.f) + 100.f, 500.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	pApacheObject->MoveApachObject();
 	m_ppGameObjects[2] = pApacheObject;
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(1850.0f, m_pTerrain->GetHeight(1850.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetPosition(XMFLOAT3(850.0f, m_pTerrain->GetHeight(850.0f, 700.f) + 100.f, 700.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	pApacheObject->MoveApachObject();
 	m_ppGameObjects[3] = pApacheObject;
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(1750.0f, m_pTerrain->GetHeight(1750.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetPosition(XMFLOAT3(850.0f, m_pTerrain->GetHeight(850.0f, 900.f) + 100.f, 900.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	pApacheObject->MoveApachObject();
 	m_ppGameObjects[4] = pApacheObject;
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(1650.0f, m_pTerrain->GetHeight(1650.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetPosition(XMFLOAT3(1650.0f, m_pTerrain->GetHeight(1650.0f, 400.f) + 100.f, 400.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	pApacheObject->MoveApachObject();
 	m_ppGameObjects[5] = pApacheObject;
 
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(1600.0f, m_pTerrain->GetHeight(1600.0f, 400.f) + 50.f, 400.f));
+	pApacheObject->SetPosition(XMFLOAT3(1300.0f, m_pTerrain->GetHeight(1300.0f, 1000.f) + 100.f, 1000.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
+	pApacheObject->MoveApachObject();
 	m_ppGameObjects[6] = pApacheObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -171,14 +178,7 @@ void CScene::ReleaseObjects()
 		for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Release();
 		delete[] m_ppGameObjects;
 	}
-
 	m_pBillboardShader->ReleaseObjects(); 
-	//if (m_ppBillboardObj)
-	//{
-	//	for (int i = 0; i < m_nObjects; i++) if (m_ppBillboardObj[i]) m_ppBillboardObj[i]->Release();
-	//	delete[] m_ppBillboardObj;
-	//}
-	//if (m_pTerrain) delete m_pTerrain;
 
 	ReleaseShaderVariables();
 
@@ -348,9 +348,7 @@ void CScene::ReleaseUploadBuffers()
 {
 	for (int i = 0; i < m_nGameObjects; i++) 
 		m_ppGameObjects[i]->ReleaseUploadBuffers();
-	//if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
-	//for (int i = 0; i < m_nObjects; i++)
-	//	m_ppBillboardObj[i]->ReleaseUploadBuffers();
+	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 
 }
 
@@ -363,19 +361,6 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 {
 	switch (nMessageID)
 	{
-	//case WM_KEYDOWN:
-	//	switch (wParam)
-	//	{
-	//	case 'W': m_ppGameObjects[0]->MoveForward(+1.0f); break;
-	//	case 'S': m_ppGameObjects[0]->MoveForward(-1.0f); break;
-	//	case 'A': m_ppGameObjects[0]->MoveStrafe(-1.0f); break;
-	//	case 'D': m_ppGameObjects[0]->MoveStrafe(+1.0f); break;
-	//	case 'Q': m_ppGameObjects[0]->MoveUp(+1.0f); break;
-	//	case 'R': m_ppGameObjects[0]->MoveUp(-1.0f); break;
-	//	default:
-	//		break;
-	//	}
-	//	break;
 	default:
 		break;
 	}
@@ -422,16 +407,6 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 			m_pTerrain->Render(pd3dCommandList, pCamera);
 		if (pWaterMesh)
 			pWaterMesh->Render(pd3dCommandList, pCamera);
-
-		//for (int i = 0; i < m_nObjects; i++)
-		//{
-		//	if (m_ppBillboardObj[i])
-		//	{
-		//		//m_ppBillboardObj[i]->UpdateTransform(NULL);
-		//		m_ppBillboardObj[i]->Render(pd3dCommandList, pCamera);
-		//		m_ppBillboardObj[i]->Animates(m_fElapsedTime, pCamera);
-		//	}
-		//}
 
 		m_pBillboardShader->Render(pd3dCommandList, pCamera);
 
