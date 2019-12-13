@@ -66,11 +66,14 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	XMFLOAT3 xmf3Scale(12.0f, 5.0f, 12.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.5f, 0.05f, 0.0f);
+	m_ptessellationfactor = new CTessellationFector();
+	m_ptessellationfactor->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 9, 9, xmf3Scale, xmf4Color);
 
 	pWaterMesh = new CSeaWater(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 750.0f, 0.05f, 750.0f);
 	pWaterMesh->SetPosition(XMFLOAT3(1500.0f, m_pTerrain->GetHeight(800.0f, 800.0f)-20.f , 1500.0f));
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 	float fxPitch = 12.0f * 10.0f;
 	float fyPitch = 12.0f * 10.0f;
@@ -222,7 +225,7 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dDescriptorRanges[4].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[8];
+	D3D12_ROOT_PARAMETER pd3dRootParameters[9];
 
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[0].Descriptor.ShaderRegister = 1; //Camera
@@ -267,6 +270,10 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dRootParameters[7].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[4];
 	pd3dRootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+	pd3dRootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	pd3dRootParameters[8].Descriptor.ShaderRegister = 5; //fector
+	pd3dRootParameters[8].Descriptor.RegisterSpace = 0;
+	pd3dRootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	//D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
 
 	//»ùÇÃ·¯
@@ -391,7 +398,7 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
-
+	m_ptessellationfactor->UpdateShaderVariables(pd3dCommandList); 
 	UpdateShaderVariables(pd3dCommandList);
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();

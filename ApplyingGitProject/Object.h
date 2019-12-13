@@ -30,6 +30,8 @@ class CShader;
 
 struct CB_GAMEOBJECT_INFO { XMFLOAT4X4	m_xmf4x4World; };
 
+
+
 struct MATERIALLOADINFO
 {
 	XMFLOAT4 m_xmf4AlbedoColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -43,14 +45,6 @@ struct MATERIALLOADINFO
 	float	 m_fGlossyReflection = 0.0f;
 
 	UINT m_nType = 0x00;
-
-	//char							m_pstrAlbedoMapName[64] = { '\0' };
-	//char							m_pstrSpecularMapName[64] = { '\0' };
-	//char							m_pstrMetallicMapName[64] = { '\0' };
-	//char							m_pstrNormalMapName[64] = { '\0' };
-	//char							m_pstrEmissionMapName[64] = { '\0' };
-	//char							m_pstrDetailAlbedoMapName[64] = { '\0' };
-	//char							m_pstrDetailNormalMapName[64] = { '\0' };
 };
 
 struct MATERIALSLOADINFO
@@ -336,4 +330,27 @@ public:
 	CStartView(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
 	virtual ~CStartView();
 
+};
+
+struct CB_TESSELLATION_INFO 
+{ 
+	float m_fTessellationFector;
+	float m_InsideTessFactor; 
+};
+
+class CTessellationFector 
+{
+protected:
+	ID3D12Resource* m_pd3dcbTessellationFector = NULL;
+	CB_TESSELLATION_INFO* m_pcbMappedFector = NULL;
+
+public:
+	float Fector;
+	float InsideFactor; 
+	CTessellationFector();
+	virtual ~CTessellationFector();
+
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void ReleaseShaderVariables();
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 };

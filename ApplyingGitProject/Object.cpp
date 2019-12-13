@@ -836,15 +836,6 @@ void CApacheObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 		MoveApachObject();
 	}
 
-	//float PosX = rand() % 500 + ReadyPos.x ; 
-	//float PosY = rand() % 100 + ReadyPos.y ;
-	//float PosZ = rand() % 500 + ReadyPos.z ;
-
-	//SetRandomPosition(XMFLOAT3(PosX, PosY, PosZ));
-
-	//XMFLOAT3 lookvector = Vector3::Normalize(Vector3::Subtract(m_RandomPos, GetPosition() ));
-	//SetLook(lookvector);
-	//SetRight(Vector3::CrossProduct(lookvector, XMFLOAT3(0.0f, 1.0f, 0.0f)));
 
 	MoveForward(1.0f);
 }
@@ -890,7 +881,6 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 
 	m_nWidth = nWidth;
 	m_nLength = nLength;
-
 	m_xmf3Scale = xmf3Scale;
 
 	m_pHeightMapImage = new CHeightMapImage(pFileName, nWidth, nLength, xmf3Scale);
@@ -900,8 +890,7 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 	m_nMeshes = cxBlocks * czBlocks;
 	m_ppMeshes = new CMesh * [m_nMeshes];
 	for (int i = 0; i < m_nMeshes; i++)	m_ppMeshes[i] = NULL;
-	//CHeightMapGridMesh* pMesh = new CHeightMapGridMesh(pd3dDevice, pd3dCommandList, 0, 0, nWidth, nLength, xmf3Scale, xmf4Color, m_pHeightMapImage);
-	//SetMesh(pMesh);
+
 	CHeightMapGridMesh* pHeightMapGridMesh = NULL;
 
 	for (int z = 0, zStart = 0; z < czBlocks; z++)
@@ -910,8 +899,11 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 		{
 			xStart = x * (nBlockWidth - 1);
 			zStart = z * (nBlockLength - 1);
-			pHeightMapGridMesh = new CHeightMapGridMesh(pd3dDevice, pd3dCommandList, xStart, zStart, nBlockWidth, nBlockLength, xmf3Scale, xmf4Color, m_pHeightMapImage);
+
+			pHeightMapGridMesh = new CHeightMapGridMesh(pd3dDevice, pd3dCommandList, 
+				xStart, zStart, nBlockWidth, nBlockLength, xmf3Scale, xmf4Color, m_pHeightMapImage);
 			SetMesh(x + (z * cxBlocks), pHeightMapGridMesh);
+
 		}
 	}
 
@@ -1039,4 +1031,43 @@ CStartView::CStartView
 
 CStartView::~CStartView()
 {
+}
+
+
+CTessellationFector::CTessellationFector()
+{
+	Fector = 3;
+	InsideFactor = 3; 
+}
+
+CTessellationFector::~CTessellationFector()
+{
+}
+
+void CTessellationFector::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	
+	UINT ncbElementBytes = (sizeof(CB_TESSELLATION_INFO)); 
+	//m_pcbMappedFector = new CB_TESSELLATION_INFO; 
+	m_pd3dcbTessellationFector = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+
+	m_pd3dcbTessellationFector->Map(0, NULL, (void**)&m_pcbMappedFector);
+}
+
+void CTessellationFector::ReleaseShaderVariables()
+{
+	if (m_pd3dcbTessellationFector)
+	{
+		m_pd3dcbTessellationFector->Unmap(0, NULL);
+		m_pd3dcbTessellationFector->Release();
+	}
+}
+
+void CTessellationFector::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	//::memcpy(&m_pcbMappedLights->m_nLights, &m_nLights, sizeof(int));
+	::memcpy(&m_pcbMappedFector->m_fTessellationFector, &Fector, sizeof(CB_TESSELLATION_INFO));
+	//m_pcbMappedFector->m_fTessellationFector = Fector;
+	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbTessellationFector->GetGPUVirtualAddress();
+	pd3dCommandList->SetGraphicsRootConstantBufferView(8, d3dGpuVirtualAddress);
 }

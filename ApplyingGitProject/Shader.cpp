@@ -466,8 +466,8 @@ D3D12_RASTERIZER_DESC CTerrainShader::CreateRasterizerState()
 {
 	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
-	//d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
-	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	//d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE;
 	d3dRasterizerDesc.DepthBias = 0;
@@ -481,8 +481,6 @@ D3D12_RASTERIZER_DESC CTerrainShader::CreateRasterizerState()
 
 	return(d3dRasterizerDesc);
 }
-
-//virtual void CreateShader(ID3D12Device *pd3dDevice, ID3D12RootSignature *pd3dGraphicsRootSignature);
 
 void CTerrainShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
@@ -599,19 +597,6 @@ CBillboardShader::~CBillboardShader()
 
 void CBillboardShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
-	
-	//GSVERTEXT pVertices[6];
-	//pVertices[0] = { CTexturedVertex(XMFLOAT3(-1.0f, +1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f)), XMFLOAT2(50.0f, 100.f) };
-	//pVertices[1] = { CTexturedVertex(XMFLOAT3(+1.0f, +1.0f, 1.0f), XMFLOAT2(1.0f, 0.0f)), XMFLOAT2(50.0f, 100.f) };
-	//pVertices[2] = { CTexturedVertex(XMFLOAT3(+1.0f, -1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f)), XMFLOAT2(50.0f, 100.f) };
-	//pVertices[3] = { CTexturedVertex(XMFLOAT3(-1.0f, +1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f)), XMFLOAT2(50.0f, 100.f) };
-	//pVertices[4] = { CTexturedVertex(XMFLOAT3(+1.0f, -1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f)), XMFLOAT2(50.0f, 100.f) };
-	//pVertices[5] = { CTexturedVertex(XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f)), XMFLOAT2(50.0f, 100.f) };
-
-	//m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, sizeof(GSVERTEXT) * 6, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-	//m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
-	//m_d3dVertexBufferView.StrideInBytes = sizeof(GSVERTEXT);
-	//m_d3dVertexBufferView.SizeInBytes = sizeof(GSVERTEXT) * 6;
 
 	int nFlowerObjects = 0;
 
@@ -644,18 +629,18 @@ void CBillboardShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	{
 		float xPosition = 0 + rand() % 2000;
 		float zPosition = 0 + rand() % 2000;
-		//float xPosition = 1000.0f + i*20; 
-		//float zPosition = 1000.0f + i*20;
 		float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 		
 		pInstanceInfos[i].m_xmf3Position = XMFLOAT3(xPosition, fHeight, zPosition);
 		if(i%2 ==0)
-			pInstanceInfos[i].m_xmf4BillboardInfo = XMFLOAT2(50.0f,50.0f);
+			pInstanceInfos[i].m_xmf4BillboardInfo = XMFLOAT2(100.0f,50.0f);
 		else
 			pInstanceInfos[i].m_xmf4BillboardInfo = XMFLOAT2(50.0f, 50.0f);
 	}
 		
-	m_pd3dInstancesBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pInstanceInfos, sizeof(VS_VB_BILLBOARD_INSTANCE) * m_nInstances, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dInstanceUploadBuffer);
+	m_pd3dInstancesBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pInstanceInfos, 
+		sizeof(VS_VB_BILLBOARD_INSTANCE) * m_nInstances, D3D12_HEAP_TYPE_DEFAULT,
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dInstanceUploadBuffer);
 
 	m_d3dInstancingBufferView.BufferLocation = m_pd3dInstancesBuffer->GetGPUVirtualAddress();
 	m_d3dInstancingBufferView.StrideInBytes = sizeof(VS_VB_BILLBOARD_INSTANCE);
@@ -669,9 +654,6 @@ D3D12_INPUT_LAYOUT_DESC CBillboardShader::CreateInputLayout()
 	UINT nInputElementDescs = 2;
 	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
 
-	//pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	//pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	//pd3dInputElementDescs[2] = { "SIZE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
 	pd3dInputElementDescs[1] = { "SIZE", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 };
 
@@ -705,8 +687,7 @@ D3D12_RASTERIZER_DESC CBillboardShader::CreateRasterizerState()
 {
 	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
-	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
-	//실행이 안된 이유 cULLMODE가  BACK이 디폴트 였음
+	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID; //실행이 안된 이유 cULLMODE가  BACK이 디폴트 였음
 	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE;
 	d3dRasterizerDesc.DepthBias = 0;

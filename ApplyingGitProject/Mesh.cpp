@@ -271,8 +271,8 @@ CHeightMapGridMesh::CHeightMapGridMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsC
 
 	float fHeight = 0.0f, fMinHeight = +FLT_MAX, fMaxHeight = -FLT_MAX;
 
-			// cxHeightMap = 257-1 
-			// scale 8 2 8
+	// cxHeightMap = 257-1 
+	// scale 8 2 8
 
 	//for (int i = 0, z = zStart; z < (zStart + nLength); z++)
 	//{

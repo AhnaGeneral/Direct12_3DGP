@@ -69,6 +69,7 @@ public:
 	CBillboardShader         *m_pBillboardShader = NULL; 
 	//CBillboard               *pBillboard = NULL;
 	CStartView               *StartView = NULL;
+	CTessellationFector      *m_ptessellationfactor = NULL; 
 
 public:
 	ID3D12RootSignature		 *m_pd3dGraphicsRootSignature = NULL;

@@ -19,6 +19,11 @@ cbuffer cbGameObjectInfo : register(b2)
 	MATERIAL				gMaterial : packoffset(c4);
 };
 
+cbuffer cbTsInfo : register(b5)
+{
+	float			 gvTSTactor : packoffset(c0);
+	float            gvTSInsideFactor : packoffset(c1);
+};
 #include "Light.hlsl"
 //============================================================================================
 Texture2D gtxtTexture : register(t0);
@@ -71,36 +76,6 @@ struct VS_TERRAIN_INPUT
 	float2 uv0 : TEXCOORD0;
 	float2 uv1 : TEXCOORD1;
 };
-//
-//struct VS_TERRAIN_OUTPUT
-//{
-//	float4 position : SV_POSITION;
-//	float4 color : COLOR;
-//	float2 uv0 : TEXCOORD0;
-//	float2 uv1 : TEXCOORD1;
-//};
-//
-//VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
-//{
-//	VS_TERRAIN_OUTPUT output;
-//
-//	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
-//	output.color = input.color;
-//	output.uv0 = input.uv0;
-//	output.uv1 = input.uv1;
-//
-//	return(output);
-//}
-//
-//float4 PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
-//{
-//	float4 cBaseTexColor = gtxTerrainBaseTexture.Sample(gWrapSamplerState, input.uv0);
-//	float4 cDetailTexColor = gtxTerrainDetailTexture.Sample(gWrapSamplerState, input.uv1);
-//	float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
-//
-//	//float4 cColor = float4(1,0,0,1);
-//	return(cColor);
-//}
 
 struct VS_TERRAIN_TESSELLATION_OUTPUT
 {
@@ -123,6 +98,8 @@ VS_TERRAIN_TESSELLATION_OUTPUT VSTerrainTessellation(VS_TERRAIN_INPUT input)
 }
 
 // HS-> TS -> DS 
+
+
 struct HS_TERRAIN_TESSELLATION_CONSTANT
 {
 	float fTessEdges[4] : SV_TessFactor;
@@ -137,13 +114,6 @@ struct HS_TERRAIN_TESSELLATION_OUTPUT
 	float2 uv1 : TEXCOORD1;
 };
 
-struct DS_TERRAIN_TESSELLATION_OUTPUT
-{
-	float4 position : SV_POSITION;
-	float4 color : COLOR;
-	float2 uv0 : TEXCOORD0;
-	float2 uv1 : TEXCOORD1;
-};
 
 void BernsteinCoeffcient5x5(float t, out float fBernstein[5])
 {
@@ -188,15 +158,23 @@ HS_TERRAIN_TESSELLATION_CONSTANT VSTerrainTessellationConstant(InputPatch<VS_TER
 {
 	HS_TERRAIN_TESSELLATION_CONSTANT output;
 
-	output.fTessEdges[0] = 3.0f;
-	output.fTessEdges[1] = 3.0f;
-	output.fTessEdges[2] = 3.0f;
-	output.fTessEdges[3] = 3.0f;
-	output.fTessInsides[0] = 3.0f;
-	output.fTessInsides[1] = 3.0f;
+	output.fTessEdges[0] = gvTSTactor;
+	output.fTessEdges[1] = gvTSTactor;
+	output.fTessEdges[2] = gvTSTactor;
+	output.fTessEdges[3] = gvTSTactor;
+	output.fTessInsides[0] = gvTSInsideFactor;
+	output.fTessInsides[1] = gvTSInsideFactor;
 
 	return(output);
 }
+
+struct DS_TERRAIN_TESSELLATION_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float4 color : COLOR;
+	float2 uv0 : TEXCOORD0;
+	float2 uv1 : TEXCOORD1;
+};
 
 [domain("quad")]
 DS_TERRAIN_TESSELLATION_OUTPUT DSTerrainTessellation(HS_TERRAIN_TESSELLATION_CONSTANT patchConstant, float2 uv : SV_DomainLocation, OutputPatch<HS_TERRAIN_TESSELLATION_OUTPUT, 25> patch)
@@ -222,8 +200,6 @@ float4 PSTerrainTessellation(DS_TERRAIN_TESSELLATION_OUTPUT input) : SV_TARGET
 {
 	float4 cBaseTexColor = gtxTerrainBaseTexture.Sample(gWrapSamplerState, input.uv0);
 	float4 cDetailTexColor = gtxTerrainDetailTexture.Sample(gWrapSamplerState, input.uv1);
-	//float fAlpha = gtxtTerrainAlphaTexture.Sample(gWrapSamplerState, input.uv0);
-
 	float4 cColor = saturate(lerp(cBaseTexColor, cDetailTexColor, 0.6));
 
 	return(cColor);
