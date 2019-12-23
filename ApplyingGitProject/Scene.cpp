@@ -116,7 +116,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(1000.0f, m_pTerrain->GetHeight(1000.0f, 400.f) + 100.f, 400.f));
+	pApacheObject->SetPosition(XMFLOAT3(1000.0f, m_pTerrain->GetHeight(1000.0f, 400.f) + 200.f, 400.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	pApacheObject->MoveApachObject();
 	m_ppGameObjects[0] = pApacheObject;
@@ -124,7 +124,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(800.0f, m_pTerrain->GetHeight(800.0f, 1400.f) + 100.f, 1400.f));
+	pApacheObject->SetPosition(XMFLOAT3(800.0f, m_pTerrain->GetHeight(800.0f, 1400.f) + 200.f, 1400.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	pApacheObject->MoveApachObject();
 	m_ppGameObjects[1] = pApacheObject;
@@ -132,7 +132,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(400.0f, m_pTerrain->GetHeight(400.0f, 500.f) + 100.f, 500.f));
+	pApacheObject->SetPosition(XMFLOAT3(400.0f, m_pTerrain->GetHeight(400.0f, 500.f) + 200.f, 500.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	pApacheObject->MoveApachObject();
 	m_ppGameObjects[2] = pApacheObject;
@@ -140,7 +140,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(850.0f, m_pTerrain->GetHeight(850.0f, 700.f) + 100.f, 700.f));
+	pApacheObject->SetPosition(XMFLOAT3(850.0f, m_pTerrain->GetHeight(850.0f, 700.f) + 200.f, 700.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	pApacheObject->MoveApachObject();
 	m_ppGameObjects[3] = pApacheObject;
@@ -148,7 +148,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(850.0f, m_pTerrain->GetHeight(850.0f, 900.f) + 100.f, 900.f));
+	pApacheObject->SetPosition(XMFLOAT3(850.0f, m_pTerrain->GetHeight(850.0f, 900.f) + 200.f, 900.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	pApacheObject->MoveApachObject();
 	m_ppGameObjects[4] = pApacheObject;
@@ -156,7 +156,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(1650.0f, m_pTerrain->GetHeight(1650.0f, 400.f) + 100.f, 400.f));
+	pApacheObject->SetPosition(XMFLOAT3(1650.0f, m_pTerrain->GetHeight(1650.0f, 400.f) + 200.f, 400.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	pApacheObject->MoveApachObject();
 	m_ppGameObjects[5] = pApacheObject;
@@ -164,7 +164,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pApacheObject = new CApacheObject();
 	pApacheObject->SetChild(pApacheModel, true);
 	pApacheObject->OnInitialize();
-	pApacheObject->SetPosition(XMFLOAT3(1300.0f, m_pTerrain->GetHeight(1300.0f, 1000.f) + 100.f, 1000.f));
+	pApacheObject->SetPosition(XMFLOAT3(1300.0f, m_pTerrain->GetHeight(1300.0f, 1000.f) + 200.f, 1000.f));
 	pApacheObject->SetScale(1.2f, 1.2f, 1.2f);
 	pApacheObject->MoveApachObject();
 	m_ppGameObjects[6] = pApacheObject;
@@ -271,10 +271,10 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dRootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	pd3dRootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	pd3dRootParameters[8].Descriptor.ShaderRegister = 5; //fector
+	pd3dRootParameters[8].Descriptor.ShaderRegister = 5; //factor
 	pd3dRootParameters[8].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-	//D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
+
 
 	//»ùÇÃ·¯
 	D3D12_STATIC_SAMPLER_DESC d3dSamplerDesc[2];

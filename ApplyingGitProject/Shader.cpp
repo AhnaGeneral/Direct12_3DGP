@@ -466,8 +466,8 @@ D3D12_RASTERIZER_DESC CTerrainShader::CreateRasterizerState()
 {
 	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
-	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
-	//d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+	//d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE;
 	d3dRasterizerDesc.DepthBias = 0;
@@ -485,7 +485,7 @@ D3D12_RASTERIZER_DESC CTerrainShader::CreateRasterizerState()
 void CTerrainShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 
-	m_nPipelineStates = 1;
+	m_nPipelineStates = 2;
 	m_ppd3dPipelineStates = new ID3D12PipelineState * [m_nPipelineStates];
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC d3dPipelineStateDesc;
@@ -506,7 +506,13 @@ void CTerrainShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	d3dPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	d3dPipelineStateDesc.SampleDesc.Count = 1;
 	d3dPipelineStateDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
-	HRESULT hResult = pd3dDevice->CreateGraphicsPipelineState(&d3dPipelineStateDesc, __uuidof(ID3D12PipelineState), (void**)&m_ppd3dPipelineStates[0]);
+	HRESULT hResult = pd3dDevice->CreateGraphicsPipelineState
+	(&d3dPipelineStateDesc, __uuidof(ID3D12PipelineState), (void**)&m_ppd3dPipelineStates[0]);
+
+	d3dPipelineStateDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	hResult = pd3dDevice->CreateGraphicsPipelineState
+	(&d3dPipelineStateDesc, __uuidof(ID3D12PipelineState), (void**)&m_ppd3dPipelineStates[1]);
+
 
 	if (m_pd3dVertexShaderBlob) m_pd3dVertexShaderBlob->Release();
 	if (m_pd3dPixelShaderBlob) m_pd3dPixelShaderBlob->Release();
@@ -515,6 +521,20 @@ void CTerrainShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 
 	if (d3dPipelineStateDesc.InputLayout.pInputElementDescs) delete[] d3dPipelineStateDesc.InputLayout.pInputElementDescs;
 
+}
+
+void CTerrainShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, int nPipelineState)
+{
+	OnPrepareRender(pd3dCommandList, nPipelineState);
+}
+
+void CTerrainShader::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState)
+{
+	if (m_ppd3dPipelineStates)
+		pd3dCommandList->SetPipelineState(m_ppd3dPipelineStates[nPipelineState]);
+	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
+
+	UpdateShaderVariables(pd3dCommandList);
 }
 
 CWaterShader::CWaterShader()
@@ -600,7 +620,7 @@ void CBillboardShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 
 	int nFlowerObjects = 0;
 
-	for (int z = 2; z <= 100; z++)
+	for (int z = 2; z <= 100'00; z++)
 	{
 			nFlowerObjects++;
 	}
@@ -625,10 +645,11 @@ void CBillboardShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	XMFLOAT3 xmf3TerrainScale = pTerrain->GetScale(); 
 
 
+	   
 	for(int i =0; i< m_nObjects;++i)
 	{
-		float xPosition = 0 + rand() % 2000;
-		float zPosition = 0 + rand() % 2000;
+		float xPosition = 0 + rand() % 3000;
+		float zPosition = 0 + rand() % 3000;
 		float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 		
 		pInstanceInfos[i].m_xmf3Position = XMFLOAT3(xPosition, fHeight, zPosition);
@@ -636,6 +657,7 @@ void CBillboardShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 			pInstanceInfos[i].m_xmf4BillboardInfo = XMFLOAT2(100.0f,50.0f);
 		else
 			pInstanceInfos[i].m_xmf4BillboardInfo = XMFLOAT2(50.0f, 50.0f);
+	 m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(xPosition, fHeight, zPosition), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 		
 	m_pd3dInstancesBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pInstanceInfos, 
@@ -724,6 +746,16 @@ D3D12_DEPTH_STENCIL_DESC CBillboardShader::CreateDepthStencilState()
 	return(d3dDepthStencilDesc);
 }
 
+bool CBillboardShader::IsVisible(CCamera* pCamera)
+{
+	bool bIsVisible = false; 
+	BoundingOrientedBox xmBoundingBox = GetBoundingBox();
+
+	if (pCamera)
+		bIsVisible = pCamera->IsInFrustum(xmBoundingBox);
+	return(bIsVisible); 
+}
+
 D3D12_BLEND_DESC CBillboardShader::CreateBlendState()
 {
 	D3D12_BLEND_DESC d3dBlendDesc;
@@ -755,16 +787,19 @@ void CBillboardShader::ReleaseObjects()
 	if (m_pd3dInstanceUploadBuffer) m_pd3dInstanceUploadBuffer->Release();
 }
 
+
 void CBillboardShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	CShader::Render(pd3dCommandList, pCamera);
 
 	m_pBillboardMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
-
-	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[] = { m_d3dInstancingBufferView };
-	pd3dCommandList->IASetVertexBuffers(0, _countof(pVertexBufferViews), pVertexBufferViews);
-	pd3dCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-	pd3dCommandList->DrawInstanced(1, m_nInstances, 0, 0);
+	if (IsVisible(pCamera))
+	{
+		D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[] = { m_d3dInstancingBufferView };
+		pd3dCommandList->IASetVertexBuffers(0, _countof(pVertexBufferViews), pVertexBufferViews);
+		pd3dCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+		pd3dCommandList->DrawInstanced(1, m_nInstances, 0, 0);
+	}
 
 }
 

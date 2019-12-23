@@ -107,6 +107,7 @@ public:
 
 class CTerrainShader : public CShader
 {
+
 public:
 	CTerrainShader();
 	virtual ~CTerrainShader();
@@ -121,7 +122,9 @@ public:
 	virtual D3D12_SHADER_BYTECODE CreateHullShader();
 
 	virtual void CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
-	//virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera, int nPipelineState = 0);
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera, int nPipelineState = 0);
+	virtual void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState = 0);
+
 };
 
 class CWaterShader : public CShader
@@ -141,10 +144,12 @@ public:
 
 class CBillboardShader : public CShader
 {
+protected:
+	BoundingOrientedBox m_xmBoundingBox;
 public:
 	CBillboardShader();
 	virtual ~CBillboardShader();
-
+	BoundingOrientedBox GetBoundingBox() { return(m_xmBoundingBox); }
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL);
 	virtual D3D12_SHADER_BYTECODE     CreateVertexShader();
 	virtual D3D12_SHADER_BYTECODE     CreatePixelShader();
@@ -152,6 +157,7 @@ public:
 
 	virtual D3D12_RASTERIZER_DESC     CreateRasterizerState();
 	virtual D3D12_DEPTH_STENCIL_DESC  CreateDepthStencilState();
+	bool IsVisible(CCamera* pCamera = NULL);
 
 
 

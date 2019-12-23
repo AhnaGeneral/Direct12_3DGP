@@ -317,7 +317,6 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case VK_RETURN:
 					break;
 				case VK_F1:
-					//m_pScene->m_ptessellationfactor->Fector = 9.0f; 
 				case VK_F2:
 				case VK_F3:
 					m_pCamera = m_pPlayer->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
@@ -328,9 +327,17 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case VK_F5:
 					m_pScene->PlayOn = true;
 					break;
-				case VK_F6:
+				case'1':
+					m_pScene->m_pTerrain->SetTerrainMode(); 
+					break;
+				case '2':
 				m_pScene->m_ptessellationfactor->Fector += 3.0f;
 				m_pScene->m_ptessellationfactor->InsideFactor += 3.0f; 
+				    break;
+				case '3':
+					m_pScene->m_ptessellationfactor->Fector -= 3.0f;
+					m_pScene->m_ptessellationfactor->InsideFactor -= 3.0f;
+					break;
 				break;
 				default:
 					break;

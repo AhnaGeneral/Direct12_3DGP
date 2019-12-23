@@ -43,12 +43,18 @@ protected:
 
 	ID3D12Resource					*m_pd3dcbCamera = NULL;
 	VS_CB_CAMERA_INFO				*m_pcbMappedCamera = NULL;
+protected: 
+	BoundingFrustum m_xmFrustum;
 
 public:
 	CCamera();
 	CCamera(CCamera *pCamera);
 	virtual ~CCamera();
 
+	//절두체(월드 좌표계)를 생성한다. 
+	void GenerateFrustum(); 
+	//바운딩 박스(OOBB, 월드 좌표계)가 절두체에 포함되는 가를 검사한다. 
+	bool IsInFrustum(BoundingOrientedBox& xmBoundingBox);
 	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);

@@ -852,7 +852,7 @@ void CApacheObject::MoveApachObject()
 	while (true)
 	{
 		randompos.x = GetPosition().x + (rand() % 400) - 200;
-		randompos.y = GetPosition().y + rand() % 20 - 10;
+		randompos.y = GetPosition().y+ rand() % 20 - 10 ;
 		randompos.z = GetPosition().z + (rand() % 400) - 200;
 
 		if (Vector3::Distance(randompos, GetPosition()) <= 50)
@@ -935,6 +935,40 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 CHeightMapTerrain::~CHeightMapTerrain(void)
 {
 	if (m_pHeightMapImage) delete m_pHeightMapImage;
+}
+
+void CHeightMapTerrain::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	OnPrepareRender();
+	UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
+	if (m_nMaterials > 0)
+	{
+		for (int i = 0; i < m_nMaterials; i++)
+		{
+			if (m_ppMaterials[i])
+			{
+				if (m_ppMaterials[i]->m_pShader)
+				{
+					if(WIREFRAMEmode)
+     					m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera, 1);
+					else 
+						m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera, 0);
+				}
+				m_ppMaterials[i]->UpdateShaderVariable(pd3dCommandList);
+			}
+
+			if (m_pMesh) m_pMesh->Render(pd3dCommandList, i);
+			if (m_ppMeshes)
+			{
+				for (int i = 0; i < m_nMeshes; i++)
+				{
+					if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList, i);
+				}
+			}
+		}
+	}
+	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
+	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 }
 
 CSeaWater::CSeaWater(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ID3D12RootSignature * pd3dGraphicsRootSignature, float Width, float Length, float xmf3Scale)
@@ -1044,13 +1078,13 @@ CTessellationFector::~CTessellationFector()
 {
 }
 
-void CTessellationFector::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CTessellationFector::CreateShaderVariables
+(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	
 	UINT ncbElementBytes = (sizeof(CB_TESSELLATION_INFO)); 
-	//m_pcbMappedFector = new CB_TESSELLATION_INFO; 
-	m_pd3dcbTessellationFector = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-
+	m_pd3dcbTessellationFector = 
+		::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, 
+			D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	m_pd3dcbTessellationFector->Map(0, NULL, (void**)&m_pcbMappedFector);
 }
 

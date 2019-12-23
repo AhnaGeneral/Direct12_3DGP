@@ -279,6 +279,7 @@ private:
 	int m_nLength;
 	XMFLOAT3 m_xmf3Scale;
 	CHeightMapImage *m_pHeightMapImage;
+	bool WIREFRAMEmode = false;
 
 public:
 	float GetHeight(float x, float z, bool bReverseQuad = false) { return(m_pHeightMapImage->GetHeight(x, z, bReverseQuad) * m_xmf3Scale.y); } //World
@@ -286,10 +287,19 @@ public:
 
 	int GetHeightMapWidth() { return(m_pHeightMapImage->GetHeightMapWidth()); }
 	int GetHeightMapLength() { return(m_pHeightMapImage->GetHeightMapLength()); }
+	void SetTerrainMode() 
+	{
+		if(!WIREFRAMEmode)
+		WIREFRAMEmode = true; 
+		else
+		WIREFRAMEmode = false;
 
+	}
 	XMFLOAT3 GetScale() { return(m_xmf3Scale); }
 	float GetWidth() { return(m_nWidth * m_xmf3Scale.x); }
 	float GetLength() { return(m_nLength * m_xmf3Scale.z); }
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+
 };
 
 
@@ -348,9 +358,10 @@ public:
 	float Fector;
 	float InsideFactor; 
 	CTessellationFector();
-	virtual ~CTessellationFector();
+	~CTessellationFector();
 
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void ReleaseShaderVariables();
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+    void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+    void ReleaseShaderVariables();
+    void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 };
+
